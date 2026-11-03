@@ -1,0 +1,108 @@
+{%- if section.settings.show_announcement and section.settings.text != blank -%}
+  <aside
+    class="alpina-announcement-bar full-width"
+    style="--announcement-bg: {{ section.settings.bg_color }}; --announcement-color: {{ section.settings.text_color }};"
+    aria-label="Announcement"
+  >
+    <div class="alpina-container announcement-content">
+      {%- if section.settings.link != blank -%}
+        <a href="{{ section.settings.link }}" class="announcement-link">
+          <span class="announcement-badge">{{ section.settings.badge_text }}</span>
+          <span class="announcement-text">{{ section.settings.text }}</span>
+        </a>
+      {%- else -%}
+        <div class="announcement-text-wrapper">
+          {%- if section.settings.badge_text != blank -%}
+            <span class="announcement-badge">{{ section.settings.badge_text }}</span>
+          {%- endif -%}
+          <span class="announcement-text">{{ section.settings.text }}</span>
+        </div>
+      {%- endif -%}
+    </div>
+  </aside>
+{%- endif -%}
+
+{% stylesheet %}
+  .alpina-announcement-bar {
+    background-color: var(--announcement-bg, #0C4A34);
+    color: var(--announcement-color, #FFFFFF);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    padding: 0.55rem 1rem;
+    text-align: center;
+    position: relative;
+    z-index: 50;
+  }
+  .announcement-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .announcement-link,
+  .announcement-text-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    color: inherit;
+  }
+  .announcement-badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 9999px;
+    background-color: var(--color-btn-bg, #00BFA5);
+    color: #0C3827;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .announcement-text {
+    line-height: 1.4;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Enable announcement bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge label (optional)",
+      "default": "SPECIAL OFFER"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Announcement message",
+      "default": "Free Himalayan Spring Tea Sample with orders over ₹999 | Express India-wide Shipping"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Announcement link"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#FFFFFF"
+    }
+  ]
+}
+{% endschema %}

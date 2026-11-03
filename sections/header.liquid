@@ -1,65 +1,613 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
-  </h2>
+{%- liquid
+  assign header_bg = section.settings.bg_color | default: 'var(--color-bg-primary)'
+  assign header_text = section.settings.text_color | default: 'var(--color-primary)'
+  assign btn_bg = section.settings.btn_bg | default: 'var(--color-btn-bg)'
+  assign btn_text = section.settings.btn_text | default: 'var(--color-btn-text)'
+-%}
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+<header
+  class="alpina-header full-width{% if section.settings.enable_sticky %} alpina-header--sticky{% endif %}"
+  style="--header-bg: {{ header_bg }}; --header-text: {{ header_text }}; --header-btn-bg: {{ btn_bg }}; --header-btn-text: {{ btn_text }};"
+  data-header
+>
+  <div class="alpina-container header-inner">
+    <!-- Mobile Hamburger Toggle -->
+    <button
+      type="button"
+      class="header-hamburger mobile-only"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="mobile-nav-drawer"
+      data-mobile-toggle
+    >
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+      <span class="hamburger-bar"></span>
+    </button>
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
+    <!-- Brand Logo / Badge -->
+    <div class="header-brand">
+      <a href="{{ routes.root_url }}" class="brand-link" aria-label="{{ shop.name }}">
+        {%- if section.settings.logo != blank -%}
+          {{
+            section.settings.logo
+            | image_url: width: section.settings.logo_width
+            | image_tag:
+              class: 'brand-logo-img',
+              widths: '120, 160, 200, 240',
+              loading: 'eager',
+              alt: shop.name
+          }}
+        {%- else -%}
+          <!-- Boxed Badge Style from Reference Image -->
+          <div class="alpina-badge-logo">
+            <span class="badge-word">ALPINA</span>
+            <span class="badge-word">BREW</span>
+          </div>
+        {%- endif -%}
+      </a>
+    </div>
 
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
-        <sup>{{ cart.item_count }}</sup>
-      {% endif %}
+    <!-- Desktop Navigation Links -->
+    <nav class="header-nav desktop-only" aria-label="Main Navigation">
+      <ul class="nav-list">
+        {%- for link in section.settings.menu.links -%}
+          <li class="nav-item">
+            <a
+              href="{{ link.url }}"
+              class="nav-link{% if link.current %} nav-link--active{% endif %}"
+              {% if link.current %}aria-current="page"{% endif %}
+            >
+              {{ link.title }}
+            </a>
+          </li>
+        {%- else -%}
+          <li class="nav-item"><a href="{{ routes.root_url }}" class="nav-link nav-link--active">HOME</a></li>
+          <li class="nav-item"><a href="{{ routes.all_products_collection_url }}" class="nav-link">TEAS & BLENDS</a></li>
+          <li class="nav-item"><a href="/pages/brewing-guide" class="nav-link">RECIPES</a></li>
+          <li class="nav-item"><a href="/pages/contact" class="nav-link">CONTACT</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
+    <!-- Right Utility Cluster -->
+    <div class="header-actions">
+      <!-- Search Button -->
+      <a href="{{ routes.search_url }}" class="header-action-btn" aria-label="Search teas">
+        <span class="action-icon">
+          {% render 'icon', name: 'search' %}
+        </span>
+      </a>
+
+      <!-- Sign In / Account Pill Button -->
+      {%- if shop.customer_accounts_enabled -%}
+        {%- if customer -%}
+          <a href="{{ routes.account_url }}" class="btn-account-pill desktop-only" aria-label="View account">
+            ACCOUNT
+          </a>
+        {%- else -%}
+          <a href="{{ routes.account_login_url }}" class="btn-account-pill desktop-only" aria-label="Sign in">
+            SIGN IN
+          </a>
+        {%- endif -%}
+      {%- else -%}
+        <a href="/pages/contact" class="btn-account-pill desktop-only" aria-label="Join Club">
+          SIGN IN
+        </a>
+      {%- endif -%}
+
+      <!-- Cart Icon with reactive counter -->
+      <a
+        href="{{ routes.cart_url }}"
+        class="header-action-btn header-cart-btn"
+        aria-label="Shopping Cart, {{ cart.item_count }} items"
+        {% if settings.enable_cart_drawer %}data-cart-drawer-trigger{% endif %}
+      >
+        <span class="action-icon">
+          {% render 'icon', name: 'cart' %}
+        </span>
+        <span class="cart-count-badge" data-cart-count>{{ cart.item_count }}</span>
+      </a>
+    </div>
   </div>
 </header>
 
+<!-- Mobile Navigation Drawer -->
+<div id="mobile-nav-drawer" class="mobile-drawer" aria-hidden="true" data-mobile-drawer>
+  <div class="drawer-overlay" data-drawer-close></div>
+  <div class="drawer-panel">
+    <div class="drawer-header">
+      <div class="alpina-badge-logo alpina-badge-logo--small">
+        <span class="badge-word">ALPINA</span>
+        <span class="badge-word">BREW</span>
+      </div>
+      <button type="button" class="drawer-close-btn" aria-label="Close menu" data-drawer-close>
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+
+    <!-- Search in Mobile Drawer -->
+    <div class="drawer-search">
+      <form action="{{ routes.search_url }}" method="get" role="search" class="drawer-search-form">
+        <input
+          type="search"
+          name="q"
+          placeholder="Search organic teas & blends..."
+          class="input-pill drawer-search-input"
+          aria-label="Search"
+        >
+        <button type="submit" class="drawer-search-submit" aria-label="Submit search">
+          {% render 'icon', name: 'search' %}
+        </button>
+      </form>
+    </div>
+
+    <!-- Mobile Nav Links -->
+    <nav class="drawer-nav">
+      <ul class="drawer-nav-list">
+        {%- for link in section.settings.menu.links -%}
+          <li class="drawer-nav-item">
+            <a href="{{ link.url }}" class="drawer-nav-link{% if link.current %} drawer-nav-link--active{% endif %}">
+              {{ link.title }}
+            </a>
+          </li>
+        {%- else -%}
+          <li class="drawer-nav-item"><a href="{{ routes.root_url }}" class="drawer-nav-link">HOME</a></li>
+          <li class="drawer-nav-item"><a href="{{ routes.all_products_collection_url }}" class="drawer-nav-link">TEAS & BLENDS</a></li>
+          <li class="drawer-nav-item"><a href="/pages/brewing-guide" class="drawer-nav-link">RECIPES</a></li>
+          <li class="drawer-nav-item"><a href="/pages/contact" class="drawer-nav-link">CONTACT</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <!-- Drawer Account & Social Footer -->
+    <div class="drawer-footer">
+      {%- if customer -%}
+        <a href="{{ routes.account_url }}" class="btn btn--primary full-width-btn">MY ACCOUNT</a>
+      {%- else -%}
+        <a href="{{ routes.account_login_url }}" class="btn btn--primary full-width-btn">SIGN IN</a>
+      {%- endif -%}
+
+      <div class="drawer-social">
+        {% render 'social-icons' %}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% stylesheet %}
-  header {
-    height: 5rem;
+  .alpina-header {
+    background-color: var(--header-bg, var(--color-bg-primary));
+    color: var(--header-text, var(--color-primary));
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    border-bottom: 1px solid rgba(12, 74, 52, 0.08);
+    position: relative;
+    z-index: 40;
+  }
+  .alpina-header--sticky {
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 4.8rem;
+    gap: 1.5rem;
   }
-  header a {
-    position: relative;
+
+  /* Badge Logo */
+  .brand-link {
+    display: inline-block;
+    color: inherit;
     text-decoration: none;
-    color: var(--color-foreground);
   }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+  .alpina-badge-logo {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--color-primary, #0C4A34);
+    border-radius: 6px;
+    padding: 0.25rem 0.55rem;
+    line-height: 1;
+    background-color: transparent;
+    transition: transform 0.2s ease;
   }
-  header svg {
-    width: 2rem;
+  .alpina-badge-logo:hover {
+    transform: scale(1.03);
   }
-  header .header__menu,
-  header .header__icons {
+  .alpina-badge-logo--small {
+    border-width: 1.5px;
+    padding: 0.2rem 0.45rem;
+  }
+  .badge-word {
+    font-family: var(--font-body-family, sans-serif);
+    font-weight: 900;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    color: var(--color-primary, #0C4A34);
+  }
+  .badge-word:last-child {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+  }
+  .brand-logo-img {
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Navigation Links */
+  .header-nav {
+    flex: 1;
     display: flex;
-    gap: 1rem;
+    justify-content: center;
+  }
+  .nav-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+  }
+  .nav-link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--header-text, var(--color-primary));
+    padding: 0.4rem 0;
+    position: relative;
+    transition: color 0.2s ease;
+  }
+  .nav-link:hover {
+    color: var(--color-secondary, #059669);
+  }
+  .nav-link--active {
+    color: var(--color-primary, #0C4A34);
+  }
+  .nav-link--active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2.5px;
+    background-color: var(--color-btn-bg, #00BFA5);
+    border-radius: 2px;
+  }
+
+  /* Right Actions */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+  .header-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--header-text, var(--color-primary));
+    position: relative;
+    padding: 0.4rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .header-action-btn:hover {
+    transform: translateY(-1px);
+    background-color: rgba(12, 74, 52, 0.06);
+  }
+  .action-icon svg {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+  .cart-count-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--color-btn-bg, #00BFA5);
+    color: #0C3827;
+    font-size: 0.72rem;
+    font-weight: 700;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25rem;
+    transform: translate(25%, -20%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Sign-in Pill Button */
+  .btn-account-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1.4rem;
+    background-color: var(--header-btn-bg, #00BFA5);
+    color: var(--header-btn-text, #0C3827);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: var(--radius-btn, 50px);
+    box-shadow: 0 3px 10px rgba(0, 191, 165, 0.25);
+    transition: all 0.25s ease;
+  }
+  .btn-account-pill:hover {
+    background-color: var(--color-btn-hover, #009E88);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 191, 165, 0.35);
+  }
+
+  /* Hamburger Toggle */
+  .header-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 1.8rem;
+    height: 1.25rem;
+    padding: 0;
+  }
+  .hamburger-bar {
+    width: 100%;
+    height: 2px;
+    background-color: var(--header-text, var(--color-primary));
+    border-radius: 2px;
+    transition: all 0.25s ease;
+  }
+
+  /* Responsive Display Rules */
+  .mobile-only {
+    display: none;
+  }
+  .desktop-only {
+    display: flex;
+  }
+
+  @media screen and (max-width: 1023px) {
+    .mobile-only {
+      display: flex;
+    }
+    .desktop-only {
+      display: none;
+    }
+    .header-inner {
+      height: 4.2rem;
+    }
+  }
+
+  /* Mobile Drawer */
+  .mobile-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    pointer-events: none;
+    visibility: hidden;
+    transition: visibility 0.3s ease;
+  }
+  .mobile-drawer[aria-hidden="false"] {
+    pointer-events: auto;
+    visibility: visible;
+  }
+  .drawer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(12, 74, 52, 0.45);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .mobile-drawer[aria-hidden="false"] .drawer-overlay {
+    opacity: 1;
+  }
+  .drawer-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: min(85vw, 360px);
+    height: 100%;
+    background-color: var(--color-bg-primary, #D4F1E0);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+  }
+  .mobile-drawer[aria-hidden="false"] .drawer-panel {
+    transform: translateX(0);
+  }
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(12, 74, 52, 0.1);
+  }
+  .drawer-close-btn {
+    width: 2.2rem;
+    height: 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(12, 74, 52, 0.08);
+    color: var(--color-primary);
+  }
+  .drawer-close-btn svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .drawer-search-form {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .drawer-search-input {
+    padding-right: 2.8rem;
+    font-size: 0.9rem;
+  }
+  .drawer-search-submit {
+    position: absolute;
+    right: 0.6rem;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .drawer-search-submit svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .drawer-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin: 0;
+    padding: 0;
+  }
+  .drawer-nav-link {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(12, 74, 52, 0.05);
+  }
+  .drawer-nav-link--active {
+    color: var(--color-secondary);
+  }
+  .drawer-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(12, 74, 52, 0.1);
+  }
+  .full-width-btn {
+    width: 100%;
+  }
+  .drawer-social {
+    display: flex;
+    justify-content: center;
   }
 {% endstylesheet %}
 
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('[data-mobile-toggle]');
+    const drawer = document.querySelector('[data-mobile-drawer]');
+    const closeTriggers = document.querySelectorAll('[data-drawer-close]');
+
+    if (!toggle || !drawer) return;
+
+    function openDrawer() {
+      drawer.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.setAttribute('data-drawer-open', 'true');
+    }
+
+    function closeDrawer() {
+      drawer.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.removeAttribute('data-drawer-open');
+    }
+
+    toggle.addEventListener('click', openDrawer);
+    closeTriggers.forEach(el => el.addEventListener('click', closeDrawer));
+
+    // Close on Escape key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.getAttribute('aria-hidden') === 'false') {
+        closeDrawer();
+      }
+    });
+  });
+{% endjavascript %}
+
 {% schema %}
 {
-  "name": "t:general.header",
+  "name": "Header",
   "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Custom logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 80,
+      "max": 240,
+      "step": 10,
+      "unit": "px",
+      "label": "Logo width",
+      "default": 140
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "Main menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky header on scroll",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Color Overrides"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Header background",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Header text & icons",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Sign-in button background",
+      "default": "#00BFA5"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Sign-in button text",
+      "default": "#0C3827"
     }
   ]
 }

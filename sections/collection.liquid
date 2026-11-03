@@ -1,47 +1,279 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+  assign text_color = section.settings.text_color | default: 'var(--color-text)'
+  assign heading_color = section.settings.heading_color | default: 'var(--color-headings)'
+  assign products_per_page = section.settings.products_per_page | default: 12
+-%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
+<section
+  class="alpina-collection-section full-width"
+  style="
+    --col-bg: {{ bg_color }};
+    --col-text: {{ text_color }};
+    --col-heading: {{ heading_color }};
+    --col-pt: {{ section.settings.padding_top }}px;
+    --col-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <!-- Collection Banner Header -->
+    <header class="collection-header">
+      <span class="section-eyebrow">ESTATE HARVESTS</span>
+      <h1 class="collection-title">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="collection-desc">{{ collection.description }}</div>
+      {%- endif -%}
+    </header>
 
-<h1>{{ collection.title }}</h1>
-
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
+    <!-- Toolbar: Product Count & Sorting -->
+    <div class="collection-toolbar">
+      <div class="collection-count">
+        <span>{{ collection.products_count }} {{ collection.products_count | pluralize: 'Harvest', 'Harvests' }}</span>
       </div>
-    {% endfor %}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+      <div class="collection-sorting">
+        <label for="SortBy" class="sort-label">Sort by:</label>
+        <select id="SortBy" class="sort-select" data-sort-by>
+          {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+          <option value="manual" {% if sort_by == 'manual' %}selected="selected"{% endif %}>Featured</option>
+          <option value="best-selling" {% if sort_by == 'best-selling' %}selected="selected"{% endif %}>Best Selling</option>
+          <option value="price-ascending" {% if sort_by == 'price-ascending' %}selected="selected"{% endif %}>Price: Low to High</option>
+          <option value="price-descending" {% if sort_by == 'price-descending' %}selected="selected"{% endif %}>Price: High to Low</option>
+          <option value="created-descending" {% if sort_by == 'created-descending' %}selected="selected"{% endif %}>Newest</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Product Grid with Pagination -->
+    {%- paginate collection.products by products_per_page -%}
+      {%- if collection.products.size > 0 -%}
+        <div class="product-grid columns-mobile-{{ section.settings.columns_mobile }}">
+          {%- for product in collection.products -%}
+            {% render 'product-card', product: product, show_secondary_image: section.settings.show_secondary_image %}
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="collection-pagination" aria-label="Pagination">
+            {{ paginate | default_pagination }}
+          </nav>
+        {%- endif -%}
+      {%- else -%}
+        <div class="collection-empty alpina-card">
+          <h3>No teas currently found in this harvest.</h3>
+          <p>Please check another collection or browse all available teas.</p>
+          <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">
+            VIEW ALL TEAS
+          </a>
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  </div>
+</section>
 
 {% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  .alpina-collection-section {
+    background-color: var(--col-bg, var(--color-bg-primary));
+    color: var(--col-text, var(--color-text));
+    padding-top: var(--col-pt, 40px);
+    padding-bottom: var(--col-pb, 80px);
+  }
+  .collection-header {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 2.5rem auto;
+  }
+  .collection-title {
+    font-size: clamp(2.2rem, 3.8vw + 0.5rem, 3.4rem);
+    color: var(--col-heading, var(--color-headings));
+    line-height: 1.15;
+    margin-bottom: 0.8rem;
+  }
+  .collection-desc {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--col-text, var(--color-text-muted));
+  }
+  .collection-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.25rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(12, 74, 52, 0.12);
+  }
+  .collection-count {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-primary, #0C4A34);
+  }
+  .collection-sorting {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .sort-label {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+  .sort-select {
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--radius-btn, 50px);
+    border: 1.5px solid rgba(12, 74, 52, 0.18);
+    background-color: #FFFFFF;
+    color: var(--color-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .sort-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+  }
+  .collection-empty {
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 580px;
+    margin: 3rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  .collection-pagination {
+    margin-top: 3.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  .collection-pagination .pagination {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+  }
+  .collection-pagination a,
+  .collection-pagination .current {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.6rem;
+    height: 2.6rem;
+    padding: 0 0.6rem;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+  .collection-pagination a {
+    color: var(--color-primary);
+    background: #FFFFFF;
+    border: 1px solid rgba(12, 74, 52, 0.15);
+  }
+  .collection-pagination a:hover {
+    background: var(--color-bg-primary);
+  }
+  .collection-pagination .current {
+    background: var(--color-primary);
+    color: #FFFFFF;
+  }
+
+  @media screen and (max-width: 640px) {
+    .collection-toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
   }
 {% endstylesheet %}
 
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', () => {
+    const sortSelect = document.querySelector('[data-sort-by]');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort_by', e.target.value);
+        window.location.href = url.toString();
+      });
+    }
+  });
+{% endjavascript %}
+
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Collection Products",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "label": "Products per page",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1 column" },
+        { "value": "2", "label": "2 columns" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show second image on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1B3B2B"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ]
 }
 {% endschema %}

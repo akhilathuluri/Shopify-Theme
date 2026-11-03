@@ -1,23 +1,70 @@
-{% comment %}
-  This section is used in the 404 template to render page shown when customers
-  enter an invalid store URL.
+<section class="alpina-404-section full-width">
+  <div class="alpina-container">
+    <div class="card-404 alpina-card">
+      <div class="illustration-404">
+        <img src="{{ 'tea-illustration.svg' | asset_url }}" alt="" width="220" height="220">
+      </div>
+      <span class="section-eyebrow">LOST IN THE CLOUD FORESTS</span>
+      <h1 class="title-404">404 &mdash; Page Not Found</h1>
+      <p class="desc-404">
+        The tea harvest or page you are looking for has been steeped, enjoyed, or moved to a new estate trail.
+      </p>
+      <div class="actions-404">
+        <a href="{{ routes.root_url }}" class="btn btn--secondary">
+          RETURN HOME
+        </a>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">
+          EXPLORE ALL TEAS
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/404
-{% endcomment %}
-
-<h1>{{ '404.title' | t }}</h1>
-
-<p>
-  {{ '404.not_found' | t }}
-</p>
-
-<a href="{{ routes.all_products_collection_url }}">
-  {{ '404.back_to_shopping' | t }}
-</a>
+{% stylesheet %}
+  .alpina-404-section {
+    background-color: var(--color-bg-primary, #D4F1E0);
+    padding-top: 4rem;
+    padding-bottom: 6rem;
+  }
+  .card-404 {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 4.5rem 2.5rem;
+    text-align: center;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .illustration-404 img {
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 10px 20px rgba(12, 74, 52, 0.1));
+  }
+  .title-404 {
+    font-size: clamp(2rem, 3.2vw + 0.5rem, 3rem);
+    color: var(--color-headings, #0C4A34);
+    line-height: 1.2;
+  }
+  .desc-404 {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--color-text-muted, #4A6B5B);
+    max-width: 480px;
+  }
+  .actions-404 {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.404",
+  "name": "404 Page",
   "settings": []
 }
 {% endschema %}

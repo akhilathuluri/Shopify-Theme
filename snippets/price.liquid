@@ -1,0 +1,101 @@
+{% doc %}
+  Renders a product's price, compare-at price, and sale badge.
+
+  @param {product} [product] - The product object
+  @param {variant} [use_variant] - Optional specific variant
+  @param {boolean} [show_badges] - Whether to render sale or sold out badges
+{% enddoc %}
+
+{%- liquid
+  if use_variant
+    assign target = use_variant
+  else
+    assign target = product
+  endif
+
+  assign compare_at_price = target.compare_at_price
+  assign price = target.price | default: 1999
+  assign available = target.available | default: false
+  assign money_price = price | money
+-%}
+
+<div class="alpina-price{% if compare_at_price > price %} alpina-price--on-sale{% endif %}{% unless available %} alpina-price--sold-out{% endunless %}">
+  <div class="alpina-price__container">
+    {%- if compare_at_price > price -%}
+      <span class="visually-hidden">Regular price</span>
+      <s class="alpina-price__regular">{{ compare_at_price | money }}</s>
+      <span class="visually-hidden">Sale price</span>
+      <span class="alpina-price__sale">{{ money_price }}</span>
+    {%- else -%}
+      <span class="visually-hidden">Regular price</span>
+      <span class="alpina-price__regular">{{ money_price }}</span>
+    {%- endif -%}
+
+    {%- if target.unit_price_measurement -%}
+      <span class="alpina-price__unit">
+        {{ target.unit_price | money }} /
+        {%- if target.unit_price_measurement.reference_value != 1 -%}
+          {{- target.unit_price_measurement.reference_value -}}
+        {%- endif -%}
+        {{ target.unit_price_measurement.reference_unit }}
+      </span>
+    {%- endif -%}
+  </div>
+
+  {%- if show_badges -%}
+    {%- if compare_at_price > price -%}
+      <span class="alpina-badge alpina-badge--sale">SALE</span>
+    {%- elsif available == false -%}
+      <span class="alpina-badge alpina-badge--sold-out">SOLD OUT</span>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .alpina-price {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.05rem;
+  }
+  .alpina-price__container {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .alpina-price__regular {
+    font-weight: 700;
+    color: var(--color-primary, #0C4A34);
+  }
+  .alpina-price--on-sale .alpina-price__regular {
+    text-decoration: line-through;
+    color: var(--color-text-muted, #7E9B8D);
+    font-weight: 500;
+    font-size: 0.9em;
+  }
+  .alpina-price__sale {
+    font-weight: 800;
+    color: var(--color-sale, #D97736);
+  }
+  .alpina-price__unit {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+  .alpina-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .alpina-badge--sale {
+    background-color: var(--color-sale, #D97736);
+    color: #FFFFFF;
+  }
+  .alpina-badge--sold-out {
+    background-color: rgba(12, 74, 52, 0.1);
+    color: var(--color-text-muted);
+  }
+{% endstylesheet %}

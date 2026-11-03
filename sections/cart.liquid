@@ -1,37 +1,458 @@
-{% comment %}
-  This section is used in the cart template to render /cart page with an
-  overview of the items in customer's cart.
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | default: '999' | times: 100
+  assign cart_total = cart.total_price
+  assign remaining_for_free_shipping = threshold | minus: cart_total
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+-%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
-{% endcomment %}
+<section
+  class="alpina-cart-section full-width"
+  style="
+    --cart-bg: {{ bg_color }};
+    --cart-pt: {{ section.settings.padding_top }}px;
+    --cart-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container cart-container">
+    <header class="cart-header">
+      <span class="section-eyebrow">YOUR SELECTION</span>
+      <h1 class="cart-title">Your Tea Caddy</h1>
+    </header>
 
-<h1>{{ 'cart.title' | t }}</h1>
+    {%- if cart.item_count > 0 -%}
+      <!-- Free Shipping Progress Bar -->
+      <div class="cart-free-shipping-card alpina-card">
+        {%- if remaining_for_free_shipping > 0 -%}
+          {%- assign progress_pct = cart_total | times: 100 | divided_by: threshold -%}
+          <p class="shipping-progress-text">
+            Add <strong>{{ remaining_for_free_shipping | money }}</strong> more to enjoy <strong>Complimentary Express Delivery</strong> across India!
+          </p>
+          <div class="shipping-progress-bar" role="progressbar" aria-valuenow="{{ progress_pct }}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" style="width: {{ progress_pct }}%;"></div>
+          </div>
+        {%- else -%}
+          <div class="shipping-unlocked-row">
+            <span class="unlocked-icon">🎉</span>
+            <strong>Congratulations! You have unlocked Complimentary Express Delivery.</strong>
+          </div>
+        {%- endif -%}
+      </div>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+      <form action="{{ routes.cart_url }}" method="post" id="CartForm" class="cart-form-grid">
+        <!-- Line Items List -->
+        <div class="cart-items-col">
+          <div class="cart-items-wrapper alpina-card">
+            {%- for item in cart.items -%}
+              <div class="cart-item-row" data-line-item="{{ forloop.index }}">
+                <!-- Item Media -->
+                <div class="cart-item-media">
+                  <a href="{{ item.url }}">
+                    {%- if item.image -%}
+                      {{
+                        item.image
+                        | image_url: width: 240
+                        | image_tag:
+                          class: 'cart-item-img',
+                          widths: '120, 240',
+                          loading: 'lazy',
+                          alt: item.title
+                      }}
+                    {%- else -%}
+                      <img src="{{ 'tea-illustration.svg' | asset_url }}" alt="" width="120" height="120" loading="lazy">
+                    {%- endif -%}
+                  </a>
+                </div>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+                <!-- Item Info -->
+                <div class="cart-item-details">
+                  <h3 class="cart-item-title">
+                    <a href="{{ item.url }}">{{ item.product.title }}</a>
+                  </h3>
+
+                  {%- unless item.product.has_only_default_variant -%}
+                    <div class="cart-item-variant">{{ item.variant.title }}</div>
+                  {%- endunless -%}
+
+                  <div class="cart-item-unit-price">
+                    {{ item.final_price | money }}
+                  </div>
+
+                  <!-- Quantity Controls & Remove -->
+                  <div class="cart-item-actions">
+                    <div class="cart-qty-stepper">
+                      <a
+                        href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}"
+                        class="qty-btn"
+                        aria-label="Decrease quantity of {{ item.title }}"
+                      >-</a>
+                      <span class="qty-num">{{ item.quantity }}</span>
+                      <a
+                        href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}"
+                        class="qty-btn"
+                        aria-label="Increase quantity of {{ item.title }}"
+                      >+</a>
+                    </div>
+
+                    <a
+                      href="{{ item.url_to_remove }}"
+                      class="cart-remove-link"
+                      aria-label="Remove {{ item.title }} from cart"
+                    >
+                      Remove
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Line Item Final Price -->
+                <div class="cart-item-total">
+                  <strong>{{ item.final_line_price | money }}</strong>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          <!-- Order Note -->
+          <div class="cart-note-card alpina-card">
+            <label for="CartNote" class="cart-note-label">Order Notes or Gift Message (Optional)</label>
+            <textarea
+              id="CartNote"
+              name="note"
+              class="input-pill cart-note-textarea"
+              rows="3"
+              placeholder="Special steeping or gift packaging requests..."
+            >{{ cart.note }}</textarea>
+          </div>
+        </div>
+
+        <!-- Cart Summary Column -->
+        <div class="cart-summary-col">
+          <div class="cart-summary-card alpina-card">
+            <h2 class="summary-title">Order Summary</h2>
+
+            <div class="summary-row">
+              <span class="summary-label">Subtotal:</span>
+              <strong class="summary-val">{{ cart.total_price | money }}</strong>
+            </div>
+
+            <div class="summary-row">
+              <span class="summary-label">Estimated Shipping:</span>
+              <span class="summary-val">
+                {%- if remaining_for_free_shipping <= 0 -%}
+                  <span class="free-shipping-text">FREE</span>
+                {%- else -%}
+                  Calculated at checkout
+                {%- endif -%}
+              </span>
+            </div>
+
+            <div class="summary-row summary-total-row">
+              <span class="summary-total-label">Total:</span>
+              <strong class="summary-total-val">{{ cart.total_price | money }}</strong>
+            </div>
+
+            <p class="summary-disclaimer">
+              Taxes calculated during secure checkout. Powered by Razorpay with all Indian payment methods accepted.
+            </p>
+
+            <button type="submit" name="checkout" class="btn btn--primary full-width-btn cart-checkout-btn">
+              PROCEED TO SECURE CHECKOUT
+            </button>
+
+            <div class="cart-continue-link">
+              <a href="{{ routes.all_products_collection_url }}">
+                &larr; Continue Exploring Teas
+              </a>
+            </div>
+          </div>
+        </div>
+      </form>
+    {%- else -%}
+      <!-- Empty Cart State -->
+      <div class="cart-empty-card alpina-card">
+        <div class="empty-icon-wrap">
+          <img src="{{ 'tea-illustration.svg' | asset_url }}" alt="" width="180" height="180">
+        </div>
+        <h2>Your tea caddy is currently empty.</h2>
+        <p>Explore our single-origin Himalayan harvests and ceremonial matcha blends.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">
+          EXPLORE OUR TEA COLLECTION
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .alpina-cart-section {
+    background-color: var(--cart-bg, var(--color-bg-primary));
+    color: var(--color-text, #1B3B2B);
+    padding-top: var(--cart-pt, 40px);
+    padding-bottom: var(--cart-pb, 80px);
+  }
+  .cart-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .cart-title {
+    font-size: clamp(2.2rem, 3.5vw + 0.5rem, 3.2rem);
+    color: var(--color-headings, #0C4A34);
+  }
+  .cart-free-shipping-card {
+    padding: 1.25rem 1.6rem;
+    margin-bottom: 2rem;
+    background-color: #FFFFFF;
+  }
+  .shipping-progress-text {
+    font-size: 0.95rem;
+    color: var(--color-primary);
+    margin-bottom: 0.6rem;
+  }
+  .shipping-progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(12, 74, 52, 0.1);
+    border-radius: 9999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background-color: var(--color-btn-bg, #00BFA5);
+    border-radius: 9999px;
+    transition: width 0.4s ease;
+  }
+  .shipping-unlocked-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--color-secondary, #059669);
+    font-size: 0.98rem;
+  }
+  .cart-form-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .cart-items-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .cart-items-wrapper {
+    background-color: #FFFFFF;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .cart-item-row {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    gap: 1.4rem;
+    align-items: center;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(12, 74, 52, 0.08);
+  }
+  .cart-item-row:last-child {
+    border-bottom: none;
+  }
+  .cart-item-media {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--color-bg-alternate);
+  }
+  .cart-item-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cart-item-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.25rem;
+  }
+  .cart-item-title a {
+    color: var(--color-headings);
+  }
+  .cart-item-variant {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.35rem;
+  }
+  .cart-item-unit-price {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.6rem;
+  }
+  .cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  .cart-qty-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(12, 74, 52, 0.18);
+    border-radius: var(--radius-btn, 50px);
+    overflow: hidden;
+    background-color: #FFFFFF;
+  }
+  .cart-qty-stepper .qty-btn {
+    width: 2.2rem;
+    height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+  .qty-num {
+    min-width: 1.8rem;
+    text-align: center;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+  .cart-remove-link {
+    font-size: 0.82rem;
+    color: #C62828;
+    text-decoration: underline;
+  }
+  .cart-item-total {
+    font-size: 1.15rem;
+    color: var(--color-primary);
+  }
+  .cart-note-card {
+    background-color: #FFFFFF;
+    padding: 1.4rem;
+  }
+  .cart-note-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.6rem;
+  }
+  .cart-note-textarea {
+    border-radius: 12px;
+    resize: vertical;
+  }
+  .cart-summary-card {
+    background-color: #FFFFFF;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: sticky;
+    top: 6rem;
+  }
+  .summary-title {
+    font-size: 1.35rem;
+    color: var(--color-headings);
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(12, 74, 52, 0.08);
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+  .summary-total-row {
+    padding-top: 0.8rem;
+    border-top: 1px dashed rgba(12, 74, 52, 0.15);
+    font-size: 1.25rem;
+  }
+  .free-shipping-text {
+    color: var(--color-secondary);
+    font-weight: 700;
+  }
+  .summary-disclaimer {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+  }
+  .cart-checkout-btn {
+    padding: 1rem 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .cart-continue-link {
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.88rem;
+  }
+  .cart-continue-link a {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+  .cart-empty-card {
+    text-align: center;
+    padding: 4.5rem 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    background-color: #FFFFFF;
+  }
+
+  @media screen and (max-width: 1023px) {
+    .cart-form-grid {
+      grid-template-columns: 1fr;
+    }
+    .cart-summary-card {
+      position: static;
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .cart-item-row {
+      grid-template-columns: 75px 1fr;
+      gap: 1rem;
+    }
+    .cart-item-total {
+      grid-column: 2;
+      text-align: left;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.cart",
-  "settings": []
+  "name": "Cart Page",
+  "settings": [
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ]
 }
 {% endschema %}

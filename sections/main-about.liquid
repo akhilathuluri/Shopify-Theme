@@ -1,0 +1,254 @@
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+-%}
+
+<section
+  class="alpina-about-section full-width"
+  style="
+    --about-bg: {{ bg_color }};
+    --about-pt: {{ section.settings.padding_top }}px;
+    --about-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <!-- Hero Header -->
+    <header class="about-hero-header">
+      <span class="section-eyebrow">OUR HERITAGE & PHILOSOPHY</span>
+      <h1 class="about-title">{{ section.settings.title | default: 'Born in the Mist of 6,200 Feet' }}</h1>
+      <p class="about-lead">
+        {{ section.settings.lead_text | default: 'Alpina Brew was conceived with a singular devotion: bringing the sacred purity of Himalayan terroir to your daily tea ceremony.' }}
+      </p>
+    </header>
+
+    <!-- Story Split 1 -->
+    <div class="about-story-row">
+      <div class="about-story-media alpina-card">
+        {%- if section.settings.image_1 != blank -%}
+          {{
+            section.settings.image_1
+            | image_url: width: 800
+            | image_tag: class: 'about-img', widths: '400, 600, 800', loading: 'lazy', alt: 'Himalayan Tea Estate'
+          }}
+        {%- else -%}
+          <div class="why-placeholder">
+            <img src="{{ 'tea-illustration.svg' | asset_url }}" alt="" width="300" height="300" loading="lazy">
+          </div>
+        {%- endif -%}
+      </div>
+      <div class="about-story-text">
+        <span class="section-eyebrow">THE HIGH ALTITUDE TERROIR</span>
+        <h2 class="about-story-heading">Where Glacial Air Nurtures Slow Growth</h2>
+        <p>
+          At 6,200 feet above sea level, temperatures plummet at night and mist blankets the slopes until midday. This sharp alpine diurnal fluctuation forces the tea bush to slow its metabolic growth, concentrating vital catechins, L-theanine, and aromatic oils within tender leaf shoots.
+        </p>
+        <p>
+          Unlike lowland commercial plantations that strip bushes mechanically four times a month, Alpina partners with small-batch artisanal gardens that practice regenerative soil stewardship and gentle, hand-picked morning plucking.
+        </p>
+      </div>
+    </div>
+
+    <!-- Values 3-Col Matrix -->
+    <div class="about-values-grid">
+      <div class="value-card alpina-card">
+        <span class="value-icon">🏔️</span>
+        <h3 class="value-title">Single Estate Purity</h3>
+        <p class="value-desc">No blending with inferior low-grade dust. Every tin traces back to a named estate, elevation, and harvest date.</p>
+      </div>
+      <div class="value-card alpina-card">
+        <span class="value-icon">🍃</span>
+        <h3 class="value-title">Whole Leaf Integrity</h3>
+        <p class="value-desc">We never crush, tear, or curl. Our intact whole leaves unroll gracefully in hot water, imparting clean clarity without astringency.</p>
+      </div>
+      <div class="value-card alpina-card">
+        <span class="value-icon">🤝</span>
+        <h3 class="value-title">Direct Fair Living Wages</h3>
+        <p class="value-desc">We bypass speculative middlemen, returning premium profits directly to the generational women tea plucking artisans.</p>
+      </div>
+    </div>
+
+    <!-- Call to Action Banner -->
+    <div class="about-cta-banner alpina-card">
+      <h2 class="about-cta-heading">Taste the Difference of Altitude</h2>
+      <p class="about-cta-sub">Join thousands of tea connoisseurs who have elevated their daily mindfulness with Alpina Brew.</p>
+      <a href="{{ routes.all_products_collection_url }}" class="btn btn--primary">
+        EXPLORE THE COLLECTION
+      </a>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .alpina-about-section {
+    background-color: var(--about-bg, var(--color-bg-primary));
+    color: var(--color-text, #1B3B2B);
+    padding-top: var(--about-pt, 40px);
+    padding-bottom: var(--about-pb, 80px);
+  }
+  .about-hero-header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 4rem auto;
+  }
+  .about-title {
+    font-size: clamp(2.4rem, 4vw + 0.5rem, 3.6rem);
+    color: var(--color-headings, #0C4A34);
+    line-height: 1.15;
+    margin-bottom: 1.25rem;
+  }
+  .about-lead {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: var(--color-text-muted, #4A6B5B);
+  }
+  .about-story-row {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 4rem;
+    align-items: center;
+    margin-bottom: 4.5rem;
+  }
+  .about-story-media {
+    width: 100%;
+    aspect-ratio: 4 / 3.2;
+    background-color: var(--color-bg-alternate, #EBF7EE);
+    overflow: hidden;
+  }
+  .about-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .about-story-heading {
+    font-size: 2.2rem;
+    color: var(--color-headings);
+    line-height: 1.2;
+    margin-bottom: 1.2rem;
+  }
+  .about-story-text p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--color-text-muted);
+    margin-bottom: 1.2rem;
+  }
+  .about-values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-bottom: 5rem;
+  }
+  .value-card {
+    padding: 2.5rem 2rem;
+    text-align: center;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .value-icon {
+    font-size: 2.4rem;
+    margin-bottom: 0.5rem;
+  }
+  .value-title {
+    font-size: 1.3rem;
+    color: var(--color-headings);
+  }
+  .value-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .about-cta-banner {
+    background-color: #0C4A34;
+    color: #FFFFFF;
+    padding: 4rem 2.5rem;
+    text-align: center;
+    border-radius: var(--radius-card, 24px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  .about-cta-heading {
+    font-size: clamp(2rem, 3.2vw + 0.5rem, 2.8rem);
+    color: #FFFFFF;
+    margin: 0;
+  }
+  .about-cta-sub {
+    font-size: 1.1rem;
+    color: #D4F1E0;
+    max-width: 540px;
+    margin-bottom: 1rem;
+  }
+
+  @media screen and (max-width: 1023px) {
+    .about-story-row {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    .about-values-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "About Page",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Born in the Mist of 6,200 Feet"
+    },
+    {
+      "type": "textarea",
+      "id": "lead_text",
+      "label": "Lead Description",
+      "default": "Alpina Brew was conceived with a singular devotion: bringing the sacred purity of Himalayan terroir to your daily tea ceremony."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Heritage Story Image"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ]
+}
+{% endschema %}

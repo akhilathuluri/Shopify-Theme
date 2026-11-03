@@ -1,0 +1,207 @@
+{% doc %}
+  Renders a premium tea product card with image, badges, flavor notes, price, and quick-add action.
+
+  @param {product} product - The product object to render
+  @param {boolean} [show_secondary_image] - Whether to show second image on hover
+  @param {string} [class] - Optional additional CSS class
+{% enddoc %}
+
+{%- liquid
+  assign featured_media = product.featured_media
+  assign secondary_media = product.media[1]
+  assign current_variant = product.selected_or_first_available_variant
+-%}
+
+<article class="alpina-product-card {{ class }}" data-product-card>
+  <div class="product-card-media-wrapper">
+    <a href="{{ product.url }}" class="product-card-link" aria-label="{{ product.title }}">
+      {%- if featured_media != blank -%}
+        {{
+          featured_media
+          | image_url: width: 600
+          | image_tag:
+            class: 'product-card-img product-card-img--primary',
+            widths: '300, 450, 600',
+            loading: 'lazy',
+            alt: product.title
+        }}
+        {%- if show_secondary_image and secondary_media != blank -%}
+          {{
+            secondary_media
+            | image_url: width: 600
+            | image_tag:
+              class: 'product-card-img product-card-img--secondary',
+              widths: '300, 450, 600',
+              loading: 'lazy',
+              alt: product.title
+          }}
+        {%- endif -%}
+      {%- else -%}
+        <div class="product-card-placeholder">
+          <img src="{{ 'tea-illustration.svg' | asset_url }}" alt="" width="200" height="200" loading="lazy">
+        </div>
+      {%- endif -%}
+    </a>
+
+    <!-- Badges -->
+    <div class="product-card-badges">
+      {%- if product.available == false -%}
+        <span class="alpina-badge alpina-badge--sold-out">SOLD OUT</span>
+      {%- elsif product.compare_at_price > product.price -%}
+        <span class="alpina-badge alpina-badge--sale">SALE</span>
+      {%- elsif product.tags contains 'organic' or product.tags contains 'Organic' -%}
+        <span class="alpina-badge alpina-badge--organic">100% ORGANIC</span>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="product-card-content">
+    {%- if product.type != blank -%}
+      <div class="product-card-type">{{ product.type }}</div>
+    {%- endif -%}
+
+    <h3 class="product-card-title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    <div class="product-card-price-row">
+      {% render 'price', product: product, show_badges: false %}
+    </div>
+
+    <!-- Quick Add Form -->
+    <div class="product-card-actions">
+      {%- if product.available -%}
+        {%- if product.has_only_default_variant -%}
+          {%- form 'product', product, class: 'product-quick-form', data-quick-add-form: '' -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="btn btn--primary btn-quick-add" aria-label="Add {{ product.title }} to cart">
+              <span>ADD TO CART</span>
+            </button>
+          {%- endform -%}
+        {%- else -%}
+          <!-- View Options / Choose Size -->
+          <a href="{{ product.url }}" class="btn btn--outline btn-quick-add" aria-label="Choose options for {{ product.title }}">
+            <span>CHOOSE SIZE</span>
+          </a>
+        {%- endif -%}
+      {%- else -%}
+        <button type="button" class="btn btn--outline btn-quick-add" disabled>
+          <span>SOLD OUT</span>
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+</article>
+
+{% stylesheet %}
+  .alpina-product-card {
+    background-color: var(--color-card-bg, #FFFFFF);
+    border-radius: var(--radius-card, 16px);
+    border: 1px solid var(--color-border, rgba(12, 74, 52, 0.1));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(12, 74, 52, 0.04);
+  }
+  .alpina-product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px -8px rgba(12, 74, 52, 0.12);
+  }
+  .product-card-media-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: var(--color-bg-alternate, #EBF7EE);
+    overflow: hidden;
+  }
+  .product-card-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .product-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease, opacity 0.3s ease;
+  }
+  .product-card-img--secondary {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+  }
+  .alpina-product-card:hover .product-card-img--primary {
+    transform: scale(1.05);
+  }
+  .alpina-product-card:hover .product-card-img--secondary {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  .product-card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .product-card-badges {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    z-index: 2;
+  }
+  .alpina-badge--organic {
+    background-color: var(--color-secondary, #059669);
+    color: #FFFFFF;
+  }
+  .product-card-content {
+    padding: 1.25rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  .product-card-type {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-secondary, #059669);
+    margin-bottom: 0.35rem;
+  }
+  .product-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+    color: var(--color-headings, #0C4A34);
+  }
+  .product-card-title a {
+    color: inherit;
+  }
+  .product-card-title a:hover {
+    color: var(--color-link, #059669);
+  }
+  .product-card-price-row {
+    margin-bottom: 1.1rem;
+    margin-top: auto;
+  }
+  .product-card-actions {
+    width: 100%;
+  }
+  .btn-quick-add {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.06em;
+  }
+  .product-quick-form {
+    width: 100%;
+  }
+{% endstylesheet %}

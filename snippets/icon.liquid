@@ -1,0 +1,21 @@
+{% doc %}
+  Renders an SVG icon by name.
+
+  @param {string} name - The name of the icon file in assets (e.g. 'search', 'cart', 'account', 'close', 'leaf')
+  @param {string} [class] - Optional additional CSS class for the icon
+{% enddoc %}
+
+{% case name %}
+  {% when 'search' %}
+    <span class="alpina-icon {{ class }}">{{ 'icon-search.svg' | inline_asset_content }}</span>
+  {% when 'cart' %}
+    <span class="alpina-icon {{ class }}">{{ 'icon-cart.svg' | inline_asset_content }}</span>
+  {% when 'account' %}
+    <span class="alpina-icon {{ class }}">{{ 'icon-account.svg' | inline_asset_content }}</span>
+  {% when 'close' %}
+    <span class="alpina-icon {{ class }}">{{ 'icon-close.svg' | inline_asset_content }}</span>
+  {% when 'leaf' %}
+    <span class="alpina-icon {{ class }}">{{ 'icon-leaf.svg' | inline_asset_content }}</span>
+  {% when 'check' %}
+    <span class="alpina-icon {{ class }}">{{ 'icon-check.svg' | inline_asset_content }}</span>
+{% endcase %}

@@ -1,0 +1,29 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-about",
+      "settings": {
+        "title": "Born in the Mist of 6,200 Feet",
+        "lead_text": "Alpina Brew was conceived with a singular devotion: bringing the sacred purity of Himalayan terroir to your daily tea ceremony.",
+        "bg_color": "#D4F1E0",
+        "padding_top": 40,
+        "padding_bottom": 80
+      }
+    },
+    "story_features": {
+      "type": "why-choose-us",
+      "settings": {
+        "eyebrow": "ETHICAL CRAFTSMANSHIP",
+        "title": "Ancestral Traditions & Mountain Stewardship",
+        "image_position": "right",
+        "button_label": "EXPLORE ALL TEAS",
+        "button_link": "/collections/all",
+        "bg_color": "#EBF7EE"
+      }
+    }
+  },
+  "order": [
+    "main",
+    "story_features"
+  ]
+}

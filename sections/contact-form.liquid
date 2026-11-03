@@ -1,0 +1,298 @@
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+-%}
+
+<section
+  class="alpina-contact-section full-width"
+  style="
+    --contact-bg: {{ bg_color }};
+    --contact-pt: {{ section.settings.padding_top }}px;
+    --contact-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <div class="contact-header">
+      <span class="section-eyebrow">GET IN TOUCH</span>
+      <h1 class="contact-title">{{ section.settings.title | default: 'We Welcome Your Conversation' }}</h1>
+      {%- if section.settings.subtitle != blank -%}
+        <p class="contact-subtitle">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="contact-grid">
+      <!-- Contact Form Col -->
+      <div class="contact-form-card alpina-card">
+        <h2 class="form-title">Send a Message to the Tea Master</h2>
+
+        {%- form 'contact', id: 'ContactForm', class: 'alpina-form' -%}
+          {%- if form.posted_successfully? -%}
+            <div class="form-success-banner" role="status">
+              <span class="form-success-icon">{% render 'icon', name: 'check' %}</span>
+              <p><strong>Thank you for reaching out!</strong> Our concierge will reply within 24 hours.</p>
+            </div>
+          {%- else -%}
+            {%- if form.errors -%}
+              <div class="form-error-banner" role="alert">
+                {{ form.errors | default_errors }}
+              </div>
+            {%- endif -%}
+
+            <div class="form-fields-stack">
+              <div class="form-field-group">
+                <label for="ContactForm-Name" class="field-label">Full Name</label>
+                <input
+                  type="text"
+                  id="ContactForm-Name"
+                  name="contact[Name]"
+                  class="input-pill"
+                  placeholder="Your full name..."
+                  value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                  required
+                >
+              </div>
+
+              <div class="form-field-group">
+                <label for="ContactForm-Email" class="field-label">Email Address</label>
+                <input
+                  type="email"
+                  id="ContactForm-Email"
+                  name="contact[email]"
+                  class="input-pill"
+                  placeholder="your.email@example.com"
+                  value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+                  spellcheck="false"
+                  autocomplete="email"
+                  autocapitalize="off"
+                  required
+                >
+              </div>
+
+              <div class="form-field-group">
+                <label for="ContactForm-Phone" class="field-label">Phone Number (Optional)</label>
+                <input
+                  type="tel"
+                  id="ContactForm-Phone"
+                  name="contact[Phone]"
+                  class="input-pill"
+                  placeholder="+91 98765 43210"
+                  value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+                  autocomplete="tel"
+                >
+              </div>
+
+              <div class="form-field-group">
+                <label for="ContactForm-Body" class="field-label">Your Message or Inquiry</label>
+                <textarea
+                  id="ContactForm-Body"
+                  name="contact[body]"
+                  rows="5"
+                  class="input-pill contact-textarea"
+                  placeholder="Tell us about your tea preference, corporate gifting, or order question..."
+                  required
+                >{{ form.body }}</textarea>
+              </div>
+
+              <button type="submit" class="btn btn--primary contact-submit-btn">
+                <span>SEND MESSAGE</span>
+              </button>
+            </div>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+
+      <!-- Atelier Info Col -->
+      <div class="contact-info-card alpina-card">
+        <h2 class="info-title">The Alpina Tea Atelier</h2>
+
+        <div class="info-section">
+          <h3 class="info-subtitle">Himalayan Estates & Headquarters</h3>
+          <p class="info-text">
+            Alpina Brew Estate Office<br>
+            Misty Pine Ridge, Upper Darjeeling<br>
+            West Bengal 734101, India
+          </p>
+        </div>
+
+        <div class="info-section">
+          <h3 class="info-subtitle">Direct Concierge Channels</h3>
+          <p class="info-text">
+            <strong>Inquiries:</strong> care@alpinabrew.com<br>
+            <strong>Gifting & Wholesale:</strong> concierge@alpinabrew.com<br>
+            <strong>WhatsApp Instant Chat:</strong> +91 98765 43210
+          </p>
+        </div>
+
+        <div class="info-section">
+          <h3 class="info-subtitle">Customer Care Hours</h3>
+          <p class="info-text">
+            Monday &ndash; Saturday: 9:00 AM &ndash; 7:00 PM IST<br>
+            Sunday: Closed for mountain garden rest
+          </p>
+        </div>
+
+        <div class="contact-social-block">
+          <span class="social-label">Connect With Us:</span>
+          {% render 'social-icons' %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .alpina-contact-section {
+    background-color: var(--contact-bg, var(--color-bg-primary));
+    color: var(--color-text, #1B3B2B);
+    padding-top: var(--contact-pt, 40px);
+    padding-bottom: var(--contact-pb, 80px);
+  }
+  .contact-header {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto 3rem auto;
+  }
+  .contact-title {
+    font-size: clamp(2.2rem, 3.5vw + 0.5rem, 3.2rem);
+    color: var(--color-headings, #0C4A34);
+    margin-bottom: 0.8rem;
+  }
+  .contact-subtitle {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  .contact-form-card,
+  .contact-info-card {
+    background-color: #FFFFFF;
+    padding: 2.8rem;
+  }
+  .form-title,
+  .info-title {
+    font-size: 1.45rem;
+    color: var(--color-headings);
+    margin-bottom: 1.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(12, 74, 52, 0.08);
+  }
+  .form-fields-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .form-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .field-label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+  .contact-textarea {
+    border-radius: 16px;
+    resize: vertical;
+  }
+  .contact-submit-btn {
+    align-self: flex-start;
+    padding: 0.95rem 2.5rem;
+    margin-top: 0.5rem;
+  }
+  .info-section {
+    margin-bottom: 1.6rem;
+  }
+  .info-subtitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.4rem;
+  }
+  .info-text {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--color-text-muted);
+  }
+  .contact-social-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(12, 74, 52, 0.08);
+  }
+  .social-label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-primary);
+  }
+
+  @media screen and (max-width: 1023px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .contact-form-card,
+    .contact-info-card {
+      padding: 2rem 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "We Welcome Your Conversation"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Whether you have questions about steeping rituals, corporate gifting, or order inquiries, our tea masters are here to assist."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ]
+}
+{% endschema %}

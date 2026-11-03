@@ -1,0 +1,100 @@
+{% doc %}
+  Renders an optional, dismissible profile completion reminder banner for logged-in customers.
+  Non-blocking and stores dismissal state in localStorage.
+{% enddoc %}
+
+{%- if customer -%}
+  <div id="AlpinaProfileReminder" class="profile-reminder-banner full-width" style="display: none;" role="complementary" aria-label="Profile Completion Reminder">
+    <div class="alpina-container reminder-inner">
+      <div class="reminder-text">
+        <span class="reminder-leaf">🍃</span>
+        <span>Welcome back, <strong>{{ customer.first_name | default: 'Tea Connoisseur' }}</strong>! Add your phone number for priority harvest dispatch notifications.</span>
+      </div>
+      <div class="reminder-actions">
+        <a href="{{ routes.account_addresses_url }}" class="btn btn--primary btn-sm-pill">
+          UPDATE PROFILE
+        </a>
+        <button type="button" class="btn-text-dismiss" id="DismissProfileReminder" aria-label="Dismiss reminder for now">
+          MAYBE LATER
+        </button>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .profile-reminder-banner {
+    background-color: var(--color-bg-alternate, #EBF7EE);
+    border-bottom: 1px solid rgba(12, 74, 52, 0.12);
+    padding: 0.65rem 1rem;
+    font-size: 0.88rem;
+    position: relative;
+    z-index: 35;
+  }
+  .reminder-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .reminder-text {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--color-primary, #0C4A34);
+  }
+  .reminder-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .btn-sm-pill {
+    padding: 0.45rem 1.1rem;
+    font-size: 0.78rem;
+  }
+  .btn-text-dismiss {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted, #4A6B5B);
+    text-decoration: underline;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-text-dismiss:hover {
+    color: var(--color-primary);
+  }
+
+  @media screen and (max-width: 768px) {
+    .reminder-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', () => {
+    const banner = document.getElementById('AlpinaProfileReminder');
+    const dismissBtn = document.getElementById('DismissProfileReminder');
+
+    if (!banner) return;
+
+    const dismissedAt = localStorage.getItem('alpina_profile_reminder_dismissed');
+    const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+
+    if (!dismissedAt || (Date.now() - parseInt(dismissedAt, 10)) > THIRTY_DAYS) {
+      banner.style.display = 'block';
+    }
+
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', () => {
+        localStorage.setItem('alpina_profile_reminder_dismissed', Date.now().toString());
+        banner.style.display = 'none';
+      });
+    }
+  });
+{% endjavascript %}

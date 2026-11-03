@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "main": {
+      "type": "faq-accordion",
+      "settings": {
+        "eyebrow": "CLEAR CLARITY",
+        "title": "Frequently Asked Questions",
+        "description": "<p>Find answers to common questions about our Himalayan sourcing, organic certification, steeping advice, and shipping across India.</p>",
+        "bg_color": "#D4F1E0",
+        "padding_top": 40,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

@@ -1,18 +1,65 @@
+{% doc %}
+  Renders CSS custom properties and font-face declarations dynamically loaded from theme settings.
+{% enddoc %}
+
 {% style %}
-  {% # Loads all font variantions with display: swap %}
-  {{ settings.type_primary_font | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-  {{ settings.type_primary_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {% if settings.type_heading_font %}
+    {{ settings.type_heading_font | font_face: font_display: 'swap' }}
+    {{ settings.type_heading_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+    {{ settings.type_heading_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {% endif %}
+
+  {% if settings.type_body_font %}
+    {{ settings.type_body_font | font_face: font_display: 'swap' }}
+    {{ settings.type_body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+    {{ settings.type_body_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+  {% endif %}
 
   :root {
-    --font-primary--family: {{ settings.type_primary_font.family }}, {{ settings.type_primary_font.fallback_families }};
-    --font-primary--style: {{ settings.type_primary_font.style }};
-    --font-primary--weight: {{ settings.type_primary_font.weight }};
-    --page-width: {{ settings.max_page_width }};
-    --page-margin: {{ settings.min_page_margin }}px;
-    --color-background: {{ settings.background_color }};
-    --color-foreground: {{ settings.foreground_color }};
-    --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+    --font-heading-family: {% if settings.type_heading_font %}{{ settings.type_heading_font.family }}, {{ settings.type_heading_font.fallback_families }}{% else %}serif{% endif %};
+    --font-heading-weight: {{ settings.type_heading_font.weight | default: 700 }};
+    --font-heading-style: {{ settings.type_heading_font.style | default: 'normal' }};
+
+    --font-body-family: {% if settings.type_body_font %}{{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }}{% else %}sans-serif{% endif %};
+    --font-body-weight: {{ settings.type_body_font.weight | default: 400 }};
+    --font-body-style: {{ settings.type_body_font.style | default: 'normal' }};
+
+    --color-bg-primary: {{ settings.color_bg_primary | default: '#D4F1E0' }};
+    --color-bg-alternate: {{ settings.color_bg_alternate | default: '#EBF7EE' }};
+    --color-card-bg: {{ settings.color_card_bg | default: '#FFFFFF' }};
+    --color-primary: {{ settings.color_primary | default: '#0C4A34' }};
+    --color-secondary: {{ settings.color_secondary | default: '#059669' }};
+    --color-accent: {{ settings.color_accent_terracotta | default: '#D97736' }};
+    --color-headings: {{ settings.color_headings | default: '#0C4A34' }};
+    --color-text: {{ settings.color_text_body | default: '#1B3B2B' }};
+    --color-text-muted: {{ settings.color_text_muted | default: '#4A6B5B' }};
+    --color-border: {{ settings.color_border | default: '#98D0B0' }};
+    --color-link: {{ settings.color_link | default: '#059669' }};
+    --color-sale: {{ settings.color_sale_price | default: '#D97736' }};
+
+    --color-btn-bg: {{ settings.color_btn_bg | default: '#00BFA5' }};
+    --color-btn-text: {{ settings.color_btn_text | default: '#0C3827' }};
+    --color-btn-hover: {{ settings.color_btn_hover_bg | default: '#009E88' }};
+    --color-btn-secondary-bg: {{ settings.color_btn_secondary_bg | default: '#0C4A34' }};
+    --color-btn-secondary-text: {{ settings.color_btn_secondary_text | default: '#FFFFFF' }};
+
+    --page-width: {{ settings.max_page_width | default: '1360px' }};
+    --page-margin: {{ settings.page_margin_desktop | default: 32 }}px;
+    --page-margin-mobile: {{ settings.page_margin_mobile | default: 20 }}px;
+    --section-spacing: {{ settings.section_spacing_desktop | default: 80 }}px;
+    --section-spacing-mobile: {{ settings.section_spacing_mobile | default: 48 }}px;
+
+    --radius-btn: {{ settings.button_radius | default: 50 }}px;
+    --radius-input: {{ settings.input_radius | default: 50 }}px;
+    --radius-card: {{ settings.card_radius | default: 16 }}px;
+    --shadow-soft: 0 10px 30px -5px rgba(12, 74, 52, 0.08), 0 4px 6px -2px rgba(12, 74, 52, 0.04);
+    --shadow-float: 0 14px 28px rgba(0, 191, 165, 0.22), 0 10px 10px rgba(12, 74, 52, 0.08);
+  }
+
+  @media screen and (max-width: 768px) {
+    :root {
+      --page-margin: var(--page-margin-mobile);
+      --section-spacing: var(--section-spacing-mobile);
+    }
   }
 {% endstyle %}

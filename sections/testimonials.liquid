@@ -1,0 +1,268 @@
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+  assign text_color = section.settings.text_color | default: 'var(--color-text)'
+  assign heading_color = section.settings.heading_color | default: 'var(--color-headings)'
+-%}
+
+<section
+  class="alpina-testimonials full-width"
+  style="
+    --t-bg: {{ bg_color }};
+    --t-text: {{ text_color }};
+    --t-heading: {{ heading_color }};
+    --t-pt: {{ section.settings.padding_top }}px;
+    --t-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <div class="section-header-center">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="section-eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="section-heading">{{ section.settings.title }}</h2>
+      {%- if section.settings.description != blank -%}
+        <div class="section-description">{{ section.settings.description }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="testimonials-grid">
+      {%- for block in section.blocks -%}
+        <div class="testimonial-card alpina-card" {{ block.shopify_attributes }}>
+          <!-- Stars -->
+          <div class="testimonial-stars" aria-label="5 out of 5 stars">
+            {%- for i in (1..5) -%}
+              <span class="star-icon">★</span>
+            {%- endfor -%}
+          </div>
+
+          <blockquote class="testimonial-quote">
+            “{{ block.settings.quote }}”
+          </blockquote>
+
+          <div class="testimonial-author-meta">
+            <div class="author-info">
+              <strong class="author-name">{{ block.settings.author_name }}</strong>
+              <span class="author-location">{{ block.settings.author_location }}</span>
+            </div>
+            {%- if block.settings.tea_blend != blank -%}
+              <div class="author-verified-purchase">
+                <span class="verified-dot"></span>
+                <span>Verified: {{ block.settings.tea_blend }}</span>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .alpina-testimonials {
+    background-color: var(--t-bg, var(--color-bg-primary));
+    color: var(--t-text, var(--color-text));
+    padding-top: var(--t-pt, 70px);
+    padding-bottom: var(--t-pb, 80px);
+  }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.8rem;
+  }
+  .testimonial-card {
+    padding: 2.2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    position: relative;
+  }
+  .testimonial-stars {
+    color: #F59E0B;
+    font-size: 1.2rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 1.1rem;
+  }
+  .testimonial-quote {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--color-text, #1B3B2B);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+  }
+  .testimonial-author-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-top: 1px solid rgba(12, 74, 52, 0.08);
+    padding-top: 1rem;
+  }
+  .author-name {
+    font-size: 1rem;
+    color: var(--color-primary, #0C4A34);
+    font-weight: 700;
+  }
+  .author-location {
+    font-size: 0.82rem;
+    color: var(--color-text-muted, #7E9B8D);
+  }
+  .author-verified-purchase {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-secondary, #059669);
+    margin-top: 0.2rem;
+  }
+  .verified-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-secondary, #059669);
+  }
+
+  @media screen and (max-width: 640px) {
+    .testimonials-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Customer Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "WORDS OF PRAISE"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Cherished by Discerning Tea Lovers"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Read experiences from certified tea sommeliers, chefs, and daily tea ritualists across India and abroad.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1B3B2B"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Customer Review",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Review Quote",
+          "default": "The aroma when opening the tin is breathtaking. Smooth, floral, zero bitterness. This has completely transformed my morning ritual."
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Customer Name",
+          "default": "Ananya Sharma"
+        },
+        {
+          "type": "text",
+          "id": "author_location",
+          "label": "Location / Title",
+          "default": "Bengaluru, India"
+        },
+        {
+          "type": "text",
+          "id": "tea_blend",
+          "label": "Verified Blend",
+          "default": "First Flush Darjeeling Spring"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Customer Testimonials",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "quote": "The Ceremonial Matcha produces the creamiest, most vibrant emerald froth I've ever experienced outside Kyoto. Exceptional quality.",
+            "author_name": "Rohan Deshmukh",
+            "author_location": "Mumbai",
+            "tea_blend": "Ceremonial Imperial Matcha"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "You can truly taste the high elevation terroir. The muscatel notes linger long after the last sip. Shipping was remarkably fast too.",
+            "author_name": "Kavita Singhania",
+            "author_location": "New Delhi",
+            "tea_blend": "Himalayan Spring Mist First Flush"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "The packaging is airtight and beautifully designed. Opening the tin felt like an artisanal luxury gift to myself.",
+            "author_name": "Marcus Vance",
+            "author_location": "Singapore",
+            "tea_blend": "Alpine Roasted Amber Oolong"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

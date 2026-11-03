@@ -1,117 +1,473 @@
-/** Critical CSS for the theme. This file is included on every page. */
+/** Critical CSS for Alpina Brew theme */
 
-/* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
-* {
+/* Reset styles */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  margin: 0;
+  min-height: 100vh;
   min-height: 100svh;
+  font-family: var(--font-body-family, sans-serif);
+  font-weight: var(--font-body-weight, 400);
+  background-color: var(--color-bg-primary, #D4F1E0);
+  color: var(--color-text, #1B3B2B);
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
-html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+html:has(dialog[scroll-lock][open], details[scroll-lock][open], [data-drawer-open]) {
   overflow: hidden;
 }
 
-img,
-picture,
-video,
-canvas,
-svg {
+img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
   height: auto;
 }
 
-input,
-textarea,
-select {
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+button {
   font: inherit;
-  border-radius: var(--style-border-radius-inputs);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-select {
-  background-color: var(--color-background);
-  color: currentcolor;
+input, textarea, select {
+  font: inherit;
+  color: inherit;
 }
 
-dialog {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-
-p {
-  text-wrap: pretty;
-}
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
 }
 
-p:empty {
-  display: none;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading-family, serif);
+  font-weight: var(--font-heading-weight, 700);
+  color: var(--color-headings, #0C4A34);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
-:is(p, h1, h2, h3, h4, h5, h6):first-child,
-:empty:first-child + :where(p, h1, h2, h3, h4, h5, h6) {
-  margin-block-start: 0;
+h1 { font-size: clamp(2rem, 4vw + 1rem, 3.5rem); }
+h2 { font-size: clamp(1.6rem, 3vw + 0.8rem, 2.5rem); }
+h3 { font-size: clamp(1.3rem, 2vw + 0.5rem, 1.8rem); }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.1rem; }
+h6 { font-size: 0.95rem; }
+
+/* Accessible focus outlines */
+:focus-visible {
+  outline: 2px solid var(--color-primary, #0C4A34);
+  outline-offset: 3px;
 }
 
-:is(p, h1, h2, h3, h4, h5, h6):last-child,
-:where(p, h1, h2, h3, h4, h5, h6) + :has(+ :empty:last-child) {
-  margin-block-end: 0;
+/* Visually Hidden Utility for Screen Readers */
+.visually-hidden {
+  position: absolute !important;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  word-wrap: normal !important;
 }
 
-/** Theme styles below */
-body {
-  font-family: var(--font-primary--family);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-
-/** Section layout utilities */
-
-/**
- * Setup a grid that enables both full-width and constrained layouts
- * depending on the class of the child elements.
- *
- * By default, a minimum content margin is set on the left and right
- * sides of the section and the content is centered in the viewport to
- * not exceed the maximum page width.
- *
- * When a child element is given the `full-width` class, it will span
- * the entire viewport.
- */
+/* Section Grid Architecture */
 .shopify-section {
   --content-width: min(
-    calc(var(--page-width) - var(--page-margin) * 2),
-    calc(100% - var(--page-margin) * 2)
+    calc(var(--page-width, 1360px) - var(--page-margin, 32px) * 2),
+    calc(100% - var(--page-margin, 32px) * 2)
   );
-  --content-margin: minmax(var(--page-margin), 1fr);
+  --content-margin: minmax(var(--page-margin, 32px), 1fr);
   --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
 
-  /* This is required to make <img> elements work as background images */
   position: relative;
   grid-template-columns: var(--content-grid);
   display: grid;
   width: 100%;
 }
 
-/* Child elements, by default, are constrained to the central column of the grid. */
 .shopify-section > * {
   grid-column: 2;
 }
 
-/* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+}
+
+/* Container helper */
+.alpina-container {
+  width: 100%;
+  max-width: var(--page-width, 1360px);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-margin, 32px);
+  padding-right: var(--page-margin, 32px);
+}
+
+/* Common Section Header Utilities */
+.section-header-center {
+  text-align: center;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3rem;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-secondary, #059669);
+  margin-bottom: 0.6rem;
+}
+
+.section-heading {
+  font-size: clamp(1.8rem, 3vw + 0.5rem, 2.8rem);
+  color: var(--color-headings, #0C4A34);
+  line-height: 1.2;
+  margin-bottom: 0.8rem;
+}
+
+.section-description {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--color-text-muted, #4A6B5B);
+}
+
+/* Badge Logo Global */
+.alpina-badge-logo {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--color-primary, #0C4A34);
+  border-radius: 6px;
+  padding: 0.25rem 0.55rem;
+  line-height: 1;
+  background-color: transparent;
+  transition: transform 0.2s ease;
+}
+
+.alpina-badge-logo:hover {
+  transform: scale(1.03);
+}
+
+.alpina-badge-logo--small {
+  border-width: 1.5px;
+  padding: 0.2rem 0.45rem;
+}
+
+.badge-word {
+  font-family: var(--font-body-family, sans-serif);
+  font-weight: 900;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--color-primary, #0C4A34);
+}
+
+.badge-word:last-child {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+}
+
+/* Button system */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--radius-btn, 50px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.btn--primary {
+  background-color: var(--color-btn-bg, #00BFA5);
+  color: var(--color-btn-text, #0C3827);
+  box-shadow: 0 4px 15px rgba(0, 191, 165, 0.25);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-btn-hover, #009E88);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 191, 165, 0.35);
+}
+
+.btn--secondary {
+  background-color: var(--color-btn-secondary-bg, #0C4A34);
+  color: var(--color-btn-secondary-text, #FFFFFF);
+}
+
+.btn--secondary:hover {
+  background-color: #083726;
+  transform: translateY(-2px);
+}
+
+.btn--outline {
+  background: transparent;
+  border: 1.5px solid var(--color-primary, #0C4A34);
+  color: var(--color-primary, #0C4A34);
+}
+
+.btn--outline:hover {
+  background: var(--color-primary, #0C4A34);
+  color: #FFFFFF;
+}
+
+.full-width-btn {
+  width: 100%;
+}
+
+/* Form Input Pill */
+.input-pill {
+  width: 100%;
+  padding: 0.85rem 1.4rem;
+  background-color: var(--color-card-bg, #FFFFFF);
+  border: 1.5px solid rgba(12, 74, 52, 0.15);
+  border-radius: var(--radius-input, 50px);
+  font-size: 0.95rem;
+  color: var(--color-text, #1B3B2B);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(12, 74, 52, 0.03);
+}
+
+.input-pill:focus {
+  outline: none;
+  border-color: var(--color-primary, #0C4A34);
+  box-shadow: 0 0 0 3px rgba(0, 191, 165, 0.2);
+}
+
+.input-pill::placeholder {
+  color: var(--color-text-muted, #7E9B8D);
+}
+
+/* Card Surface */
+.alpina-card {
+  background-color: var(--color-card-bg, #FFFFFF);
+  border-radius: var(--radius-card, 16px);
+  border: 1px solid var(--color-border, rgba(12, 74, 52, 0.1));
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.alpina-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(12, 74, 52, 0.12);
+}
+
+/* Price & Badges Global */
+.alpina-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.05rem;
+}
+
+.alpina-price__container {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.alpina-price__regular {
+  font-weight: 700;
+  color: var(--color-primary, #0C4A34);
+}
+
+.alpina-price--on-sale .alpina-price__regular {
+  text-decoration: line-through;
+  color: var(--color-text-muted, #7E9B8D);
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.alpina-price__sale {
+  font-weight: 800;
+  color: var(--color-sale, #D97736);
+}
+
+.alpina-price__unit {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.alpina-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.alpina-badge--sale {
+  background-color: var(--color-sale, #D97736);
+  color: #FFFFFF;
+}
+
+.alpina-badge--sold-out {
+  background-color: rgba(12, 74, 52, 0.1);
+  color: var(--color-text-muted);
+}
+
+.alpina-badge--organic {
+  background-color: var(--color-secondary, #059669);
+  color: #FFFFFF;
+}
+
+/* Common Grid & Placeholder Utilities */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--fc-columns-desktop, 4), 1fr);
+  gap: 1.8rem;
+}
+
+@media screen and (max-width: 1023px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .product-grid.columns-mobile-1 {
+    grid-template-columns: 1fr;
+  }
+  .product-grid.columns-mobile-2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+  }
+}
+
+.product-card-badges {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  z-index: 2;
+}
+
+.product-card-placeholder,
+.why-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.collection-pagination {
+  margin-top: 3.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.collection-pagination .pagination {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.collection-pagination a,
+.collection-pagination .current {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.6rem;
+  height: 2.6rem;
+  padding: 0 0.6rem;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.collection-pagination a {
+  color: var(--color-primary, #0C4A34);
+  background: #FFFFFF;
+  border: 1px solid rgba(12, 74, 52, 0.15);
+}
+
+.collection-pagination a:hover {
+  background: var(--color-bg-primary, #D4F1E0);
+}
+
+.collection-pagination .current {
+  background: var(--color-primary, #0C4A34);
+  color: #FFFFFF;
+}
+
+/* Global Form Feedback Banners */
+.form-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #FFFFFF;
+  border-radius: var(--radius-card, 16px);
+  padding: 1.2rem 1.4rem;
+  border-left: 4px solid var(--color-btn-bg, #00BFA5);
+  box-shadow: 0 8px 20px rgba(12, 74, 52, 0.08);
+  color: var(--color-text, #1B3B2B);
+  text-align: left;
+}
+
+.form-success-icon svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  color: var(--color-secondary, #059669);
+}
+
+.form-error-banner {
+  background: #FFEBEE;
+  color: #C62828;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

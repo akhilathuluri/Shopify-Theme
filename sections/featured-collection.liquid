@@ -1,0 +1,265 @@
+{%- liquid
+  assign collection = collections[section.settings.collection]
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+  assign heading_color = section.settings.heading_color | default: 'var(--color-headings)'
+  assign text_color = section.settings.text_color | default: 'var(--color-text)'
+  assign products_to_show = section.settings.products_to_show | default: 4
+-%}
+
+<section
+  class="featured-collection full-width"
+  style="
+    --fc-bg: {{ bg_color }};
+    --fc-heading: {{ heading_color }};
+    --fc-text: {{ text_color }};
+    --fc-columns-desktop: {{ section.settings.columns_desktop }};
+    --fc-pt: {{ section.settings.padding_top }}px;
+    --fc-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <div class="section-header-center">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="section-eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="section-heading">{{ section.settings.title }}</h2>
+      {%- if section.settings.description != blank -%}
+        <div class="section-description">{{ section.settings.description }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="product-grid columns-mobile-{{ section.settings.columns_mobile }}">
+      {%- if collection != blank and collection.products_count > 0 -%}
+        {%- for product in collection.products limit: products_to_show -%}
+          {% render 'product-card', product: product, show_secondary_image: section.settings.show_secondary_image %}
+        {%- endfor -%}
+      {%- else -%}
+        <!-- Demo tea products for instant preview -->
+        {%- for i in (1..products_to_show) -%}
+          <article class="alpina-product-card demo-card">
+            <div class="product-card-media-wrapper">
+              <div class="product-card-placeholder">
+                <img src="{{ 'tea-illustration.svg' | asset_url }}" alt="" width="200" height="200" loading="lazy">
+              </div>
+              <div class="product-card-badges">
+                <span class="alpina-badge alpina-badge--organic">100% ORGANIC</span>
+              </div>
+            </div>
+            <div class="product-card-content">
+              <div class="product-card-type">Himalayan Green Tea</div>
+              <h3 class="product-card-title"><a href="#">Alpina Reserve First Flush #{{ i }}</a></h3>
+              <div class="product-card-price-row">
+                <div class="alpina-price"><span class="alpina-price__regular">₹1,250</span></div>
+              </div>
+              <div class="product-card-actions">
+                <a href="{{ routes.all_products_collection_url }}" class="btn btn--outline btn-quick-add">
+                  <span>VIEW DETAILS</span>
+                </a>
+              </div>
+            </div>
+          </article>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_view_all and collection != blank -%}
+      <div class="section-footer-center">
+        <a href="{{ collection.url }}" class="btn btn--secondary">
+          <span>{{ section.settings.view_all_label | default: 'EXPLORE FULL CATALOG' }}</span>
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .featured-collection {
+    background-color: var(--fc-bg, var(--color-bg-primary));
+    color: var(--fc-text, var(--color-text));
+    padding-top: var(--fc-pt, 60px);
+    padding-bottom: var(--fc-pb, 80px);
+  }
+  .section-header-center {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 3rem auto;
+  }
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-secondary, #059669);
+    margin-bottom: 0.6rem;
+  }
+  .section-heading {
+    font-size: clamp(1.8rem, 3vw + 0.5rem, 2.8rem);
+    color: var(--fc-heading, var(--color-headings));
+    line-height: 1.2;
+    margin-bottom: 0.8rem;
+  }
+  .section-description {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--fc-text, var(--color-text-muted));
+  }
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--fc-columns-desktop, 4), 1fr);
+    gap: 1.8rem;
+  }
+  .section-footer-center {
+    text-align: center;
+    margin-top: 3.5rem;
+  }
+
+  @media screen and (max-width: 1023px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.2rem;
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .product-grid.columns-mobile-1 {
+      grid-template-columns: 1fr;
+    }
+    .product-grid.columns-mobile-2 {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+    }
+    .featured-collection {
+      padding-top: 40px;
+      padding-bottom: 50px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "CURATED HARVESTS"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Bestselling Alpine Blends"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Carefully hand-plucked tea leaves from certified organic Himalayan estates, micro-batched for uncompromising freshness.</p>"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Number of products to show",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Columns on desktop",
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1 column" },
+        { "value": "2", "label": "2 columns" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show second image on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View all' button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View all button label",
+      "default": "EXPLORE ALL TEAS"
+    },
+    {
+      "type": "header",
+      "content": "Section Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1B3B2B"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection"
+    }
+  ]
+}
+{% endschema %}

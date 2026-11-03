@@ -1,0 +1,294 @@
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+  assign text_color = section.settings.text_color | default: 'var(--color-text)'
+  assign heading_color = section.settings.heading_color | default: 'var(--color-headings)'
+-%}
+
+<section
+  class="brewing-guide full-width"
+  style="
+    --bg-color: {{ bg_color }};
+    --text-color: {{ text_color }};
+    --heading-color: {{ heading_color }};
+    --pt: {{ section.settings.padding_top }}px;
+    --pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <div class="section-header-center">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="section-eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      <h2 class="section-heading">{{ section.settings.title }}</h2>
+      {%- if section.settings.description != blank -%}
+        <div class="section-description">{{ section.settings.description }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="brewing-grid">
+      {%- for block in section.blocks -%}
+        <div class="brewing-card alpina-card" {{ block.shopify_attributes }}>
+          <div class="brewing-card-header">
+            <span class="brewing-tea-tag">{{ block.settings.tea_type }}</span>
+            <h3 class="brewing-tea-name">{{ block.settings.tea_name }}</h3>
+          </div>
+
+          <div class="brewing-specs">
+            <div class="spec-row">
+              <span class="spec-label">Water Temp:</span>
+              <strong class="spec-val">{{ block.settings.water_temp }}</strong>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Steep Time:</span>
+              <strong class="spec-val">{{ block.settings.steep_time }}</strong>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Leaf Ratio:</span>
+              <strong class="spec-val">{{ block.settings.leaf_ratio }}</strong>
+            </div>
+          </div>
+
+          {%- if block.settings.tasting_notes != blank -%}
+            <div class="brewing-notes">
+              <span class="notes-label">Tasting Notes:</span>
+              <p class="notes-text">{{ block.settings.tasting_notes }}</p>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .brewing-guide {
+    background-color: var(--bg-color, var(--color-bg-primary));
+    color: var(--text-color, var(--color-text));
+    padding-top: var(--pt, 60px);
+    padding-bottom: var(--pb, 80px);
+  }
+  .brewing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.8rem;
+  }
+  .brewing-card {
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background-color: #FFFFFF;
+    position: relative;
+    border-top: 4px solid var(--color-primary, #0C4A34);
+  }
+  .brewing-tea-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-secondary, #059669);
+    margin-bottom: 0.35rem;
+  }
+  .brewing-tea-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--color-headings, #0C4A34);
+  }
+  .brewing-specs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem 0;
+    border-top: 1px dashed rgba(12, 74, 52, 0.15);
+    border-bottom: 1px dashed rgba(12, 74, 52, 0.15);
+  }
+  .spec-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.92rem;
+  }
+  .spec-label {
+    color: var(--color-text-muted, #7E9B8D);
+  }
+  .spec-val {
+    color: var(--color-primary, #0C4A34);
+    font-weight: 700;
+  }
+  .brewing-notes {
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+  .notes-label {
+    font-weight: 700;
+    color: var(--color-primary, #0C4A34);
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .notes-text {
+    color: var(--color-text-muted, #4A6B5B);
+    margin: 0;
+  }
+  @media screen and (max-width: 640px) {
+    .brewing-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Brewing Guide",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "THE ART OF THE BREW"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Steeping Parameters & Rituals"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Each Alpina harvest reveals its full character when brewed with precision temperature and mindful steeping.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1B3B2B"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "guide_item",
+      "name": "Tea Guide Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tea_type",
+          "label": "Tea Category",
+          "default": "CEREMONIAL MATCHA"
+        },
+        {
+          "type": "text",
+          "id": "tea_name",
+          "label": "Blend Name",
+          "default": "Alpina Imperial Reserve"
+        },
+        {
+          "type": "text",
+          "id": "water_temp",
+          "label": "Water Temperature",
+          "default": "75°C / 167°F"
+        },
+        {
+          "type": "text",
+          "id": "steep_time",
+          "label": "Steeping / Whisk Time",
+          "default": "30 - 45s Whisk"
+        },
+        {
+          "type": "text",
+          "id": "leaf_ratio",
+          "label": "Leaf Ratio",
+          "default": "2g (1 Bamboo Chashaku)"
+        },
+        {
+          "type": "text",
+          "id": "tasting_notes",
+          "label": "Tasting Notes",
+          "default": "Sweet umami, creamy jade froth, delicate roasted hazelnut aroma."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brewing Guide",
+      "blocks": [
+        {
+          "type": "guide_item",
+          "settings": {
+            "tea_type": "CEREMONIAL MATCHA",
+            "tea_name": "Uji Heritage Reserve",
+            "water_temp": "75°C / 167°F",
+            "steep_time": "35s Whisk",
+            "leaf_ratio": "2g with 70ml water",
+            "tasting_notes": "Silky texture, deep umami sweetness, fresh cut spring grass."
+          }
+        },
+        {
+          "type": "guide_item",
+          "settings": {
+            "tea_type": "HIMALAYAN FIRST FLUSH",
+            "tea_name": "Darjeeling Spring Mist",
+            "water_temp": "85°C / 185°F",
+            "steep_time": "3 - 4 Minutes",
+            "leaf_ratio": "2.5g per 200ml",
+            "tasting_notes": "Floral muscatel, honeyed apricot, refreshing brisk finish."
+          }
+        },
+        {
+          "type": "guide_item",
+          "settings": {
+            "tea_type": "HIGH MOUNTAIN OOLONG",
+            "tea_name": "Alpine Roasted Amber",
+            "water_temp": "90°C / 194°F",
+            "steep_time": "4 Minutes (Multi-steep)",
+            "leaf_ratio": "3g per 200ml",
+            "tasting_notes": "Warm orchid, toasted pine, long lingering caramel warmth."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

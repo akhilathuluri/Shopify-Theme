@@ -1,0 +1,72 @@
+{% doc %}
+  Renders circular social media icon links (WhatsApp, Facebook, Instagram).
+
+  @param {string} [class] - Optional additional CSS class
+{% enddoc %}
+
+<div class="alpina-social-icons {{ class }}">
+  {% if settings.social_whatsapp != blank %}
+    <a
+      href="{{ settings.social_whatsapp }}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="alpina-social-btn"
+      aria-label="Chat with Alpina Brew on WhatsApp"
+    >
+      {{ 'icon-whatsapp.svg' | inline_asset_content }}
+    </a>
+  {% endif %}
+
+  {% if settings.social_facebook != blank %}
+    <a
+      href="{{ settings.social_facebook }}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="alpina-social-btn"
+      aria-label="Follow Alpina Brew on Facebook"
+    >
+      {{ 'icon-facebook.svg' | inline_asset_content }}
+    </a>
+  {% endif %}
+
+  {% if settings.social_instagram != blank %}
+    <a
+      href="{{ settings.social_instagram }}"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="alpina-social-btn"
+      aria-label="Follow Alpina Brew on Instagram"
+    >
+      {{ 'icon-instagram.svg' | inline_asset_content }}
+    </a>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .alpina-social-icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .alpina-social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background-color: var(--color-primary, #0C4A34);
+    color: #FFFFFF;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(12, 74, 52, 0.15);
+  }
+  .alpina-social-btn:hover {
+    background-color: var(--color-btn-bg, #00BFA5);
+    color: #0C3827;
+    transform: translateY(-2px);
+  }
+  .alpina-social-btn svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+{% endstylesheet %}

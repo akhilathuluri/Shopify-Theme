@@ -1,56 +1,330 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: '#0C4A34'
+  assign text_color = section.settings.text_color | default: '#D4F1E0'
+  assign heading_color = section.settings.heading_color | default: '#FFFFFF'
+-%}
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+<footer
+  class="alpina-footer full-width"
+  style="
+    --footer-bg: {{ bg_color }};
+    --footer-text: {{ text_color }};
+    --footer-heading: {{ heading_color }};
+  "
+>
+  <div class="alpina-container footer-container">
+    <div class="footer-columns">
+      <!-- Brand Ethos Column -->
+      <div class="footer-col footer-col--brand">
+        <a href="{{ routes.root_url }}" class="footer-brand-link" aria-label="{{ shop.name }}">
+          <div class="alpina-badge-logo alpina-badge-logo--light">
+            <span class="badge-word">ALPINA</span>
+            <span class="badge-word">BREW</span>
+          </div>
+        </a>
+        <p class="footer-brand-text">
+          {{ section.settings.brand_text | default: 'Pure single-origin Himalayan loose-leaf teas, ceremonial matcha, and botanical infusions harvested at 6,200ft elevation.' }}
+        </p>
+        <div class="footer-social-wrapper">
+          {% render 'social-icons' %}
+        </div>
+      </div>
 
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
-    {% endif %}
+      <!-- Quick Links Navigation -->
+      <div class="footer-col footer-col--nav">
+        <h4 class="footer-col-title">{{ section.settings.menu_title | default: 'Quick Links' }}</h4>
+        <ul class="footer-link-list">
+          {%- if section.settings.menu != blank and section.settings.menu.links.size > 0 -%}
+            {%- for link in section.settings.menu.links -%}
+              <li><a href="{{ link.url }}" class="footer-nav-link">{{ link.title }}</a></li>
+            {%- endfor -%}
+          {%- else -%}
+            <li><a href="{{ routes.root_url }}" class="footer-nav-link">Home</a></li>
+            <li><a href="{{ routes.all_products_collection_url }}" class="footer-nav-link">All Teas & Blends</a></li>
+            <li><a href="/pages/about" class="footer-nav-link">Our Heritage</a></li>
+            <li><a href="/pages/brewing-guide" class="footer-nav-link">Brewing Rituals</a></li>
+            <li><a href="/pages/contact" class="footer-nav-link">Contact Us</a></li>
+          {%- endif -%}
+        </ul>
+      </div>
+
+      <!-- Customer Care & Policies -->
+      <div class="footer-col footer-col--policies">
+        <h4 class="footer-col-title">{{ section.settings.policies_title | default: 'Customer Care' }}</h4>
+        <ul class="footer-link-list">
+          <li><a href="/pages/faq" class="footer-nav-link">Frequently Asked Questions</a></li>
+          <li><a href="/policies/shipping-policy" class="footer-nav-link">Shipping & Delivery (India)</a></li>
+          <li><a href="/policies/refund-policy" class="footer-nav-link">Returns & Refunds</a></li>
+          <li><a href="/policies/privacy-policy" class="footer-nav-link">Privacy Policy</a></li>
+          <li><a href="/policies/terms-of-service" class="footer-nav-link">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact & Assurance Column -->
+      <div class="footer-col footer-col--contact">
+        <h4 class="footer-col-title">{{ section.settings.contact_title | default: 'The Tea Atelier' }}</h4>
+        <div class="footer-contact-info">
+          <p class="contact-line">
+            <strong>Headquarters:</strong> Himalayan Estate Office, Darjeeling / Kangra Valley, India
+          </p>
+          <p class="contact-line">
+            <strong>Customer Inquiries:</strong> care@alpinabrew.com
+          </p>
+          <p class="contact-line">
+            <strong>Direct Concierge:</strong> +91 98765 43210 (WhatsApp)
+          </p>
+        </div>
+        <div class="footer-assurance-badge">
+          <span class="assurance-icon">✓</span>
+          <span>100% Certified Organic & Non-GMO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright & Payment Badges -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-copy">
+        <p>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+        <p class="footer-security-note">Encrypted Checkout &bull; Powered by Razorpay &bull; GST Registered</p>
+      </div>
+
+      <div class="footer-payment-methods">
+        {%- if section.settings.show_payment_icons -%}
+          <div class="payment-icons-wrapper">
+            {%- for type in shop.enabled_payment_types -%}
+              {{ type | payment_type_svg_tag }}
+            {%- else -%}
+              <!-- Supported Indian payment methods -->
+              <span class="payment-chip">UPI</span>
+              <span class="payment-chip">RuPay</span>
+              <span class="payment-chip">Visa</span>
+              <span class="payment-chip">Mastercard</span>
+              <span class="payment-chip">NetBanking</span>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
   </div>
 </footer>
 
 {% stylesheet %}
-  footer {
+  .alpina-footer {
+    background-color: var(--footer-bg, #0C4A34);
+    color: var(--footer-text, #D4F1E0);
+    padding-top: 5rem;
+    padding-bottom: 2.5rem;
+    position: relative;
+    z-index: 10;
+  }
+  .footer-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+  .footer-columns {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 3rem;
+  }
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .alpina-badge-logo--light {
+    border-color: #D4F1E0;
+    display: inline-flex;
+    width: fit-content;
+  }
+  .alpina-badge-logo--light .badge-word {
+    color: #D4F1E0;
+  }
+  .footer-brand-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    opacity: 0.88;
+    max-width: 320px;
+  }
+  .footer-col-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--footer-heading, #FFFFFF);
+    position: relative;
+    padding-bottom: 0.6rem;
+  }
+  .footer-col-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 2rem;
+    height: 2px;
+    background-color: var(--color-btn-bg, #00BFA5);
+    border-radius: 2px;
+  }
+  .footer-link-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+  }
+  .footer-nav-link {
+    font-size: 0.92rem;
+    color: var(--footer-text, #D4F1E0);
+    opacity: 0.85;
+    transition: all 0.2s ease;
+    display: inline-block;
+  }
+  .footer-nav-link:hover {
+    color: #FFFFFF;
+    opacity: 1;
+    transform: translateX(4px);
+  }
+  .footer-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.88;
+  }
+  .footer-assurance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: rgba(212, 241, 224, 0.08);
+    border: 1px solid rgba(212, 241, 224, 0.15);
+    border-radius: 9999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-btn-bg, #00BFA5);
+    width: fit-content;
+  }
+  .assurance-icon {
+    font-weight: 900;
+  }
+  .footer-bottom {
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
+    align-items: center;
+    gap: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(212, 241, 224, 0.12);
+    font-size: 0.85rem;
+    opacity: 0.85;
   }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
+  .footer-security-note {
+    font-size: 0.78rem;
+    opacity: 0.7;
+    margin-top: 0.25rem;
   }
-  footer .footer__links,
-  footer .footer__payment {
+  .payment-icons-wrapper {
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .payment-chip {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: 0.04em;
+  }
+
+  @media screen and (max-width: 1023px) {
+    .footer-columns {
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .alpina-footer {
+      padding-top: 3.5rem;
+      padding-bottom: 2rem;
+    }
+    .footer-columns {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.2rem;
+    }
   }
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.footer",
+  "name": "Footer",
   "settings": [
+    {
+      "type": "textarea",
+      "id": "brand_text",
+      "label": "Brand Ethos Description",
+      "default": "Pure single-origin Himalayan loose-leaf teas, ceremonial matcha, and botanical infusions harvested at 6,200ft elevation."
+    },
+    {
+      "type": "text",
+      "id": "menu_title",
+      "label": "Menu 1 Title",
+      "default": "Quick Links"
+    },
     {
       "type": "link_list",
       "id": "menu",
-      "label": "t:labels.menu"
+      "label": "Navigation Menu"
+    },
+    {
+      "type": "text",
+      "id": "policies_title",
+      "label": "Policies Column Title",
+      "default": "Customer Care"
+    },
+    {
+      "type": "text",
+      "id": "contact_title",
+      "label": "Contact Column Title",
+      "default": "The Tea Atelier"
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
-      "label": "t:labels.show_payment_icons",
+      "label": "Show Payment Methods",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Footer Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#FFFFFF"
     }
   ]
 }

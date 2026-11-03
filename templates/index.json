@@ -1,20 +1,156 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero-alpina",
+      "blocks": {
+        "slide_1": {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "DARJEELING SINGLE ESTATE 6,200FT",
+            "heading": "Himalayan First Flush",
+            "subheading": "The Champagne of Mountain Teas • Spring 2026 Harvest",
+            "description": "<p>Hand-plucked at first morning dew in misty alpine cloud forests. Vibrant floral muscatel notes, subtle white peach undertones, and a lingering honeyed finish.</p>",
+            "content_type": "button",
+            "price_tag": "From ₹1,250 • 100g",
+            "button_label": "EXPLORE FIRST FLUSH",
+            "button_link": "/collections/all",
+            "background_color": "#EBF7EE",
+            "heading_color": "#0C4A34",
+            "text_color": "#1B3B2B",
+            "btn_bg": "#00BFA5",
+            "btn_text": "#0C3827"
+          }
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "ALPINA BREW CEREMONIAL GRADE",
+            "heading": "Ceremonial Matcha Tea",
+            "subheading": "Stone-Ground First Harvest • Uji & Himalayan Terroir",
+            "description": "<p>Crafted exclusively from shade-grown tender spring tencha leaves. Whisk into an intensely silky, vibrant emerald froth brimming with clean natural L-theanine energy and rich umami sweetness.</p>",
+            "content_type": "button",
+            "price_tag": "From ₹1,450 • 50g Tin",
+            "button_label": "SHOP CEREMONIAL MATCHA",
+            "button_link": "/collections/all",
+            "background_color": "#D4F1E0",
+            "heading_color": "#0C4A34",
+            "text_color": "#1B3B2B",
+            "btn_bg": "#00BFA5",
+            "btn_text": "#0C3827"
+          }
+        }
+      },
+      "block_order": [
+        "slide_1",
+        "slide_2"
+      ],
+      "settings": {
+        "autoplay": true,
+        "autoplay_speed": 6,
+        "show_navigation_arrows": true,
+        "show_pagination_dots": true,
+        "show_wavy_lines": true,
+        "padding_top": 40,
+        "padding_bottom": 60
+      }
+    },
+    "benefits": {
+      "type": "tea-benefits",
+      "settings": {
+        "eyebrow": "THE ALPINA DIFFERENCE",
+        "title": "Pure Himalayan Terroir, Crafted With Honor",
+        "bg_color": "#EBF7EE",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "featured_collection": {
+      "type": "featured-collection",
+      "settings": {
+        "eyebrow": "CURATED HARVESTS",
+        "title": "Bestselling Alpine Blends",
+        "description": "<p>Carefully hand-plucked tea leaves from certified organic Himalayan estates, micro-batched for uncompromising freshness.</p>",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "show_secondary_image": true,
+        "show_view_all": true,
+        "view_all_label": "EXPLORE ALL TEAS",
+        "bg_color": "#D4F1E0",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "padding_top": 70,
+        "padding_bottom": 80
+      }
+    },
+    "brewing_guide": {
+      "type": "brewing-guide",
+      "settings": {
+        "eyebrow": "THE ART OF THE BREW",
+        "title": "Steeping Parameters & Rituals",
+        "description": "<p>Each Alpina harvest reveals its full character when brewed with precision temperature and mindful steeping.</p>",
+        "bg_color": "#EBF7EE",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "padding_top": 70,
+        "padding_bottom": 80
+      }
+    },
+    "why_choose_us": {
+      "type": "why-choose-us",
+      "settings": {
+        "eyebrow": "ANCIENT TRADITIONS & LIVING FORESTS",
+        "title": "Why Alpina Brew Elevates Your Daily Teatime",
+        "content": "<p>Nestled where glacial streams meet cloud forests, Alpina Brew partners with multi-generational mountain tea growers. We eschew industrial mechanization, hand-selecting exclusively whole leaves picked at morning dew for peak aromatic density.</p>",
+        "image_position": "left",
+        "button_label": "READ OUR ESTATE JOURNAL",
+        "button_link": "/pages/about",
+        "bg_color": "#D4F1E0",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "eyebrow": "WORDS OF PRAISE",
+        "title": "Cherished by Discerning Tea Lovers",
+        "description": "<p>Read experiences from certified tea sommeliers, chefs, and daily tea ritualists across India and abroad.</p>",
+        "bg_color": "#EBF7EE",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "padding_top": 70,
+        "padding_bottom": 80
+      }
+    },
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "eyebrow": "ALPINA TEA SOCIETY",
+        "title": "Join Our Circle of Connoisseurs",
+        "subheading": "<p>Receive invitations to seasonal first-flush harvests, private reserve releases, and 15% off your opening purchase.</p>",
+        "button_label": "CLAIM 15% OFF",
+        "bg_color": "#D4F1E0",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "btn_bg": "#00BFA5",
+        "btn_text": "#0C3827",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
     }
   },
   "order": [
-    "main"
+    "hero",
+    "benefits",
+    "featured_collection",
+    "brewing_guide",
+    "why_choose_us",
+    "testimonials",
+    "newsletter"
   ]
 }

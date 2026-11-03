@@ -1,0 +1,237 @@
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-alternate)'
+  assign text_color = section.settings.text_color | default: 'var(--color-text)'
+  assign heading_color = section.settings.heading_color | default: 'var(--color-headings)'
+  assign btn_bg = section.settings.btn_bg | default: 'var(--color-btn-bg)'
+  assign btn_text = section.settings.btn_text | default: 'var(--color-btn-text)'
+-%}
+
+<section
+  class="alpina-newsletter full-width"
+  style="
+    --nl-bg: {{ bg_color }};
+    --nl-text: {{ text_color }};
+    --nl-heading: {{ heading_color }};
+    --nl-btn-bg: {{ btn_bg }};
+    --nl-btn-text: {{ btn_text }};
+    --nl-pt: {{ section.settings.padding_top }}px;
+    --nl-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <div class="newsletter-card alpina-card">
+      <div class="newsletter-content">
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="section-eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+
+        <h2 class="newsletter-heading">{{ section.settings.title }}</h2>
+
+        {%- if section.settings.subheading != blank -%}
+          <div class="newsletter-subheading">{{ section.settings.subheading }}</div>
+        {%- endif -%}
+
+        <div class="newsletter-form-container">
+          {%- form 'customer', class: 'newsletter-form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter, alpina_tea_society">
+
+            {%- if form.posted_successfully? -%}
+              <div class="form-success-banner" role="status">
+                <span class="form-success-icon">{% render 'icon', name: 'check' %}</span>
+                <p><strong>Welcome to the Society!</strong> Check your inbox for your 15% introductory gift code.</p>
+              </div>
+            {%- else -%}
+              {%- if form.errors -%}
+                <div class="form-error-banner" role="alert">
+                  {{ form.errors | default_errors }}
+                </div>
+              {%- endif -%}
+
+              <div class="newsletter-form-row">
+                <label for="Newsletter-Email-{{ section.id }}" class="visually-hidden">Email Address</label>
+                <input
+                  type="email"
+                  id="Newsletter-Email-{{ section.id }}"
+                  name="contact[email]"
+                  class="input-pill newsletter-input"
+                  placeholder="Enter your email address..."
+                  value="{% if customer %}{{ customer.email }}{% endif %}"
+                  autocomplete="email"
+                  required
+                >
+                <button type="submit" class="btn btn--primary newsletter-submit-btn">
+                  {{ section.settings.button_label | default: 'SUBSCRIBE' }}
+                </button>
+              </div>
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+
+        <p class="newsletter-disclaimer">We respect your inbox. Unsubscribe anytime with one click.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .alpina-newsletter {
+    background-color: var(--nl-bg, var(--color-bg-alternate));
+    color: var(--nl-text, var(--color-text));
+    padding-top: var(--nl-pt, 80px);
+    padding-bottom: var(--nl-pb, 80px);
+  }
+  .newsletter-card {
+    background-color: #FFFFFF;
+    border: 1px solid rgba(12, 74, 52, 0.1);
+    padding: 4rem 3rem;
+    text-align: center;
+    border-radius: var(--radius-card, 24px);
+    box-shadow: 0 15px 35px rgba(12, 74, 52, 0.06);
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .newsletter-content {
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .newsletter-heading {
+    font-size: clamp(2rem, 3.2vw + 0.5rem, 2.8rem);
+    color: var(--nl-heading, var(--color-headings));
+    line-height: 1.2;
+    margin-bottom: 0.9rem;
+  }
+  .newsletter-subheading {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--nl-text, var(--color-text-muted));
+    margin-bottom: 2rem;
+  }
+  .newsletter-form-row {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+  }
+  .newsletter-input {
+    flex: 1;
+    background-color: #F8FCF9;
+  }
+  .newsletter-submit-btn {
+    padding: 0.85rem 2.2rem;
+    background-color: var(--nl-btn-bg, #00BFA5);
+    color: var(--nl-btn-text, #0C3827);
+  }
+  .newsletter-disclaimer {
+    font-size: 0.82rem;
+    color: var(--color-text-muted, #7E9B8D);
+    margin-top: 1rem;
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 640px) {
+    .newsletter-card {
+      padding: 2.2rem 1.4rem;
+    }
+    .newsletter-form-row {
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .newsletter-submit-btn {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "ALPINA TEA SOCIETY"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Join Our Circle of Connoisseurs"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "<p>Receive invitations to seasonal first-flush harvests, private reserve releases, and 15% off your opening purchase.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "CLAIM 15% OFF"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#EBF7EE"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1B3B2B"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background color",
+      "default": "#00BFA5"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Button text color",
+      "default": "#0C3827"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter"
+    }
+  ]
+}
+{% endschema %}

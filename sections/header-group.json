@@ -1,22 +1,30 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "type": "header",
-  "name": "t:general.header",
+  "name": "Header Group",
   "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "settings": {
+        "show_announcement": true,
+        "badge_text": "SPECIAL OFFER",
+        "text": "Free Himalayan Spring Tea Sample with orders over ₹999 | Express India-wide Shipping",
+        "bg_color": "#0C4A34",
+        "text_color": "#FFFFFF"
+      }
+    },
     "header": {
       "type": "header",
-      "settings": {}
+      "settings": {
+        "enable_sticky": true,
+        "bg_color": "#D4F1E0",
+        "text_color": "#0C4A34",
+        "btn_bg": "#00BFA5",
+        "btn_text": "#0C3827"
+      }
     }
   },
   "order": [
+    "announcement-bar",
     "header"
-  ],
+  ]
 }

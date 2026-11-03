@@ -1,0 +1,248 @@
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-alternate)'
+  assign text_color = section.settings.text_color | default: 'var(--color-text)'
+  assign heading_color = section.settings.heading_color | default: 'var(--color-headings)'
+-%}
+
+<section
+  class="tea-benefits full-width"
+  style="
+    --tb-bg: {{ bg_color }};
+    --tb-text: {{ text_color }};
+    --tb-heading: {{ heading_color }};
+    --tb-pt: {{ section.settings.padding_top }}px;
+    --tb-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    {%- if section.settings.title != blank -%}
+      <div class="section-header-center">
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="section-eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        <h2 class="section-heading">{{ section.settings.title }}</h2>
+      </div>
+    {%- endif -%}
+
+    <div class="benefits-grid">
+      {%- for block in section.blocks -%}
+        <div class="benefit-item alpina-card" {{ block.shopify_attributes }}>
+          <div class="benefit-icon-wrapper">
+            {%- case block.settings.icon -%}
+              {%- when 'leaf' -%}
+                {% render 'icon', name: 'leaf' %}
+              {%- when 'mountain' -%}
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>
+              {%- when 'sun' -%}
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+              {%- when 'award' -%}
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              {%- else -%}
+                {% render 'icon', name: 'leaf' %}
+            {%- endcase -%}
+          </div>
+          <h3 class="benefit-title">{{ block.settings.title }}</h3>
+          <p class="benefit-description">{{ block.settings.text }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .tea-benefits {
+    background-color: var(--tb-bg, var(--color-bg-alternate));
+    color: var(--tb-text, var(--color-text));
+    padding-top: var(--tb-pt, 60px);
+    padding-bottom: var(--tb-pb, 60px);
+    border-top: 1px solid rgba(12, 74, 52, 0.06);
+    border-bottom: 1px solid rgba(12, 74, 52, 0.06);
+  }
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.8rem;
+  }
+  .benefit-item {
+    padding: 2.2rem 1.8rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FFFFFF;
+  }
+  .benefit-icon-wrapper {
+    width: 3.8rem;
+    height: 3.8rem;
+    border-radius: 50%;
+    background-color: var(--color-bg-primary, #D4F1E0);
+    color: var(--color-primary, #0C4A34);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    transition: transform 0.3s ease;
+  }
+  .benefit-item:hover .benefit-icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+    background-color: var(--color-btn-bg, #00BFA5);
+    color: #0C3827;
+  }
+  .benefit-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--tb-heading, var(--color-headings));
+    margin-bottom: 0.6rem;
+  }
+  .benefit-description {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--tb-text, var(--color-text-muted));
+  }
+  @media screen and (max-width: 640px) {
+    .benefits-grid {
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+    }
+    .benefit-item {
+      padding: 1.6rem 1.4rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Tea Benefits",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "THE ALPINA DIFFERENCE"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "Pure Himalayan Terroir, Crafted With Honor"
+    },
+    {
+      "type": "header",
+      "content": "Section Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#EBF7EE"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0C4A34"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1B3B2B"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "leaf", "label": "Tea Leaf" },
+            { "value": "mountain", "label": "Mountain Peak" },
+            { "value": "sun", "label": "Sun / Solar" },
+            { "value": "award", "label": "Award Ribbon" }
+          ],
+          "default": "leaf"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "100% Single Estate"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Description",
+          "default": "Harvested exclusively from pristine high-altitude Himalayan mountain gardens above 6,200ft."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tea Benefits",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "mountain",
+            "title": "High Altitude Harvest",
+            "text": "Slow-grown in misty Himalayan mountain valleys above 6,200 feet for complex, nuanced flavor notes."
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "leaf",
+            "title": "Whole Leaf & Bud",
+            "text": "Strictly whole leaf selection preserving precious polyphenols, amino acids, and essential oils."
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "sun",
+            "title": "Direct Fair Trade",
+            "text": "Sourced directly with generational tea masters, providing ethical living wages and regenerative soil care."
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "award",
+            "title": "Freshness Sealed",
+            "text": "Packaged at origin in airtight UV-shielded caddies to lock in delicate mountain freshness."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

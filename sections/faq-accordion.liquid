@@ -1,0 +1,217 @@
+{%- liquid
+  assign bg_color = section.settings.bg_color | default: 'var(--color-bg-primary)'
+-%}
+
+<section
+  class="alpina-faq-section full-width"
+  style="
+    --faq-bg: {{ bg_color }};
+    --faq-pt: {{ section.settings.padding_top }}px;
+    --faq-pb: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="alpina-container">
+    <div class="section-header-center">
+      <span class="section-eyebrow">{{ section.settings.eyebrow | default: 'CLEAR CLARITY' }}</span>
+      <h1 class="section-heading">{{ section.settings.title | default: 'Frequently Asked Questions' }}</h1>
+      {%- if section.settings.description != blank -%}
+        <div class="section-description">{{ section.settings.description }}</div>
+      {%- endif -%}
+    </div>
+
+    <div class="faq-accordion-list">
+      {%- for block in section.blocks -%}
+        <details class="faq-item alpina-card" {{ block.shopify_attributes }} {% if forloop.first %}open{% endif %}>
+          <summary class="faq-summary">
+            <span class="faq-question">{{ block.settings.question }}</span>
+            <span class="faq-arrow" aria-hidden="true">▾</span>
+          </summary>
+          <div class="faq-answer">
+            {{ block.settings.answer }}
+          </div>
+        </details>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .alpina-faq-section {
+    background-color: var(--faq-bg, var(--color-bg-primary));
+    color: var(--color-text, #1B3B2B);
+    padding-top: var(--faq-pt, 40px);
+    padding-bottom: var(--faq-pb, 80px);
+  }
+  .faq-accordion-list {
+    max-width: 820px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+  .faq-item {
+    background-color: #FFFFFF;
+    border-radius: var(--radius-card, 16px);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+  }
+  .faq-summary {
+    padding: 1.5rem 1.8rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-headings, #0C4A34);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+  }
+  .faq-summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-arrow {
+    font-size: 1.1rem;
+    color: var(--color-primary);
+    transition: transform 0.25s ease;
+  }
+  .faq-item[open] .faq-arrow {
+    transform: rotate(180deg);
+  }
+  .faq-answer {
+    padding: 0 1.8rem 1.6rem 1.8rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-text-muted, #4A6B5B);
+  }
+  .faq-answer p {
+    margin-bottom: 0.8rem;
+  }
+  .faq-answer p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 640px) {
+    .faq-summary {
+      padding: 1.2rem 1.25rem;
+      font-size: 1.02rem;
+    }
+    .faq-answer {
+      padding: 0 1.25rem 1.25rem 1.25rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "CLEAR CLARITY"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Find answers to common questions about our Himalayan sourcing, organic certification, steeping advice, and shipping across India.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#D4F1E0"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 10,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 80
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "Question & Answer",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How are Alpina Brew teas sourced?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>We source directly from certified high-altitude organic estates in Darjeeling, Kangra, and Nepal, exclusively selecting early morning whole flushes harvested at 6,200ft.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is the shelf life of whole-leaf loose tea?",
+            "answer": "<p>When stored sealed in our airtight UV-protective caddies away from heat and moisture, whole-leaf loose tea maintains optimum vibrancy for 18 to 24 months from the harvest date.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What payment methods do you accept in India?",
+            "answer": "<p>We accept all major Indian payment methods through our secure Razorpay gateway: UPI (Google Pay, PhonePe, Paytm, BHIM), RuPay, Visa, Mastercard, NetBanking, and select digital wallets.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What are your shipping timelines and charges?",
+            "answer": "<p>Orders over ₹999 receive complimentary express delivery across India. Orders are dispatched within 24 business hours from our Himalayan packing atelier, typically arriving within 3-5 business days.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I re-steep whole leaf teas?",
+            "answer": "<p>Yes! High-altitude Himalayan whole leaves and oolongs can be steeped 2 to 3 times. Each subsequent infusion coaxes out subtler honeyed and roasted notes.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

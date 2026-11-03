@@ -1,0 +1,17 @@
+{
+  "sections": {
+    "main": {
+      "type": "contact-form",
+      "settings": {
+        "title": "We Welcome Your Conversation",
+        "subtitle": "Whether you have questions about steeping rituals, corporate gifting, or order inquiries, our tea masters are here to assist.",
+        "bg_color": "#D4F1E0",
+        "padding_top": 40,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

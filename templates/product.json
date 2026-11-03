@@ -1,20 +1,31 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "settings": {
+        "show_dynamic_checkout": true,
+        "bg_color": "#D4F1E0",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "padding_top": 40,
+        "padding_bottom": 80
+      }
+    },
+    "brewing_guide": {
+      "type": "brewing-guide",
+      "settings": {
+        "eyebrow": "STEEPING PERFECTION",
+        "title": "How to Brew Like a Tea Master",
+        "bg_color": "#EBF7EE",
+        "heading_color": "#0C4A34",
+        "text_color": "#1B3B2B",
+        "padding_top": 70,
+        "padding_bottom": 80
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "brewing_guide"
   ]
 }

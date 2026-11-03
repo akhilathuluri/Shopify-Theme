@@ -1,0 +1,937 @@
+<section
+  class="hero-alpina full-width"
+  id="HeroCarousel-{{ section.id }}"
+  style="
+    --hero-pt: {{ section.settings.padding_top }}px;
+    --hero-pb: {{ section.settings.padding_bottom }}px;
+  "
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-autoplay-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+  role="region"
+  aria-roledescription="carousel"
+  aria-label="Alpina Brew Featured Teas"
+>
+  {%- if section.settings.show_wavy_lines -%}
+    <div class="hero-wavy-bg" aria-hidden="true">
+      <img src="{{ 'wavy-background.svg' | asset_url }}" alt="" width="1440" height="900" loading="eager">
+    </div>
+  {%- endif -%}
+
+  <div class="hero-carousel-track">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign slide_bg = block.settings.background_color | default: 'var(--color-bg-primary)'
+        assign slide_heading = block.settings.heading_color | default: 'var(--color-headings)'
+        assign slide_text = block.settings.text_color | default: 'var(--color-text)'
+        assign slide_btn_bg = block.settings.btn_bg | default: 'var(--color-btn-bg)'
+        assign slide_btn_text = block.settings.btn_text | default: 'var(--color-btn-text)'
+      -%}
+
+      <div
+        class="hero-slide{% if forloop.first %} hero-slide--active{% endif %}"
+        id="HeroSlide-{{ block.id }}"
+        data-slide-index="{{ forloop.index0 }}"
+        style="
+          --slide-bg: {{ slide_bg }};
+          --slide-heading: {{ slide_heading }};
+          --slide-text: {{ slide_text }};
+          --slide-btn-bg: {{ slide_btn_bg }};
+          --slide-btn-text: {{ slide_btn_text }};
+        "
+        {{ block.shopify_attributes }}
+        role="group"
+        aria-roledescription="slide"
+        aria-label="Slide {{ forloop.index }} of {{ section.blocks.size }}: {{ block.settings.heading }}"
+        {% unless forloop.first %}aria-hidden="true"{% endunless %}
+      >
+        <!-- Slide Background Image (if configured) -->
+        {%- if block.settings.background_image != blank -%}
+          <div
+            class="hero-slide-bg-img"
+            style="background-image: url('{{ block.settings.background_image | image_url: width: 1920 }}');"
+            aria-hidden="true"
+          ></div>
+          <div
+            class="hero-slide-overlay"
+            style="background-color: rgba(12, 74, 52, {{ block.settings.overlay_opacity | divided_by: 100.0 }});"
+            aria-hidden="true"
+          ></div>
+        {%- endif -%}
+
+        <div class="alpina-container hero-container">
+          <div class="hero-grid">
+            <!-- Visual Column (Illustration or Custom Product Photography) -->
+            <div class="hero-visual-col">
+              <div class="hero-visual-wrapper">
+                {%- if block.settings.product_image != blank -%}
+                  {{
+                    block.settings.product_image
+                    | image_url: width: 900
+                    | image_tag:
+                      class: 'hero-custom-img',
+                      widths: '360, 540, 720, 900',
+                      loading: 'eager',
+                      fetchpriority: 'high',
+                      alt: block.settings.heading
+                  }}
+                {%- else -%}
+                  <!-- Vector Illustration matching Inspiration Reference -->
+                  <div class="hero-artisan-illustration">
+                    <img
+                      src="{{ 'tea-illustration.svg' | asset_url }}"
+                      alt="Alpina Brew Artisan Teapot and Matcha Teacup"
+                      width="560"
+                      height="560"
+                      loading="eager"
+                      fetchpriority: 'high'
+                      class="hero-vector-art"
+                    >
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+
+            <!-- Content Column -->
+            <div class="hero-content-col">
+              {%- if block.settings.eyebrow != blank -%}
+                <div class="hero-eyebrow">
+                  <span class="hero-eyebrow-badge">{{ block.settings.eyebrow }}</span>
+                </div>
+              {%- endif -%}
+
+              <h1 class="hero-heading">{{ block.settings.heading }}</h1>
+
+              {%- if block.settings.subheading != blank -%}
+                <p class="hero-subheading">{{ block.settings.subheading }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.description != blank -%}
+                <div class="hero-description">
+                  {{ block.settings.description }}
+                </div>
+              {%- endif -%}
+
+              <!-- Interactive Form OR Action Button -->
+              {%- if block.settings.content_type == 'form' -%}
+                <div class="hero-form-wrapper">
+                  {%- form 'customer', class: 'hero-newsletter-form' -%}
+                    <input type="hidden" name="contact[tags]" value="newsletter, sample_lead, hero_carousel_{{ block.id }}">
+
+                    {%- if form.posted_successfully? -%}
+                      <div class="form-success-banner" role="status">
+                        <span class="form-success-icon">{% render 'icon', name: 'check' %}</span>
+                        <p><strong>You are on the list!</strong> Your complimentary tasting sample code has been sent to your email.</p>
+                      </div>
+                    {%- else -%}
+                      {%- if form.errors -%}
+                        <div class="form-error-banner" role="alert">
+                          {{ form.errors | default_errors }}
+                        </div>
+                      {%- endif -%}
+
+                      <div class="hero-form-fields">
+                        <div class="form-field">
+                          <label for="Hero-Form-Name-{{ block.id }}" class="visually-hidden">Name</label>
+                          <input
+                            type="text"
+                            id="Hero-Form-Name-{{ block.id }}"
+                            name="contact[note][Full Name]"
+                            class="input-pill hero-input"
+                            placeholder="Name"
+                            autocomplete="name"
+                            required
+                          >
+                        </div>
+
+                        <div class="form-field">
+                          <label for="Hero-Form-Email-{{ block.id }}" class="visually-hidden">Email</label>
+                          <input
+                            type="email"
+                            id="Hero-Form-Email-{{ block.id }}"
+                            name="contact[email]"
+                            class="input-pill hero-input"
+                            placeholder="Email"
+                            value="{% if customer %}{{ customer.email }}{% endif %}"
+                            autocomplete="email"
+                            required
+                          >
+                        </div>
+
+                        <div class="form-action">
+                          <button type="submit" class="btn btn--primary hero-submit-btn">
+                            {{ block.settings.form_button_label | default: 'CONFIRM' }}
+                          </button>
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  {%- endform -%}
+                </div>
+              {%- else -%}
+                <!-- Direct Product / Collection CTA Button -->
+                {%- if block.settings.button_label != blank -%}
+                  <div class="hero-cta-action">
+                    {%- if block.settings.price_tag != blank -%}
+                      <span class="hero-price-badge">{{ block.settings.price_tag }}</span>
+                    {%- endif -%}
+                    <a href="{{ block.settings.button_link | default: routes.all_products_collection_url }}" class="btn btn--primary hero-submit-btn">
+                      <span>{{ block.settings.button_label }}</span>
+                    </a>
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+            </div>
+          </div>
+
+          <!-- Floating / Docked Social Icons matching Reference -->
+          <div class="hero-social-dock">
+            {% render 'social-icons' %}
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+
+  <!-- Carousel Navigation Arrows -->
+  {%- if section.blocks.size > 1 and section.settings.show_navigation_arrows -%}
+    <div class="hero-carousel-nav" aria-label="Carousel navigation">
+      <button
+        type="button"
+        class="hero-nav-arrow hero-nav-arrow--prev"
+        aria-label="Previous slide"
+        data-hero-prev
+      >
+        <span aria-hidden="true">&#10094;</span>
+      </button>
+      <button
+        type="button"
+        class="hero-nav-arrow hero-nav-arrow--next"
+        aria-label="Next slide"
+        data-hero-next
+      >
+        <span aria-hidden="true">&#10094;</span>
+      </button>
+    </div>
+  {%- endif -%}
+
+  <!-- Carousel Pagination Dots -->
+  {%- if section.blocks.size > 1 and section.settings.show_pagination_dots -%}
+    <div class="hero-pagination" role="tablist" aria-label="Slide selector">
+      {%- for block in section.blocks -%}
+        <button
+          type="button"
+          class="hero-dot{% if forloop.first %} hero-dot--active{% endif %}"
+          role="tab"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          aria-controls="HeroSlide-{{ block.id }}"
+          aria-label="Go to slide {{ forloop.index }}"
+          data-slide-target="{{ forloop.index0 }}"
+        ></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</section>
+
+{% stylesheet %}
+  .hero-alpina {
+    position: relative;
+    padding-top: var(--hero-pt, 40px);
+    padding-bottom: var(--hero-pb, 60px);
+    overflow: hidden;
+    min-height: calc(85vh - 5rem);
+  }
+  .hero-wavy-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+  }
+  .hero-wavy-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Carousel Track & Slides */
+  .hero-carousel-track {
+    position: relative;
+    width: 100%;
+    min-height: inherit;
+  }
+  .hero-slide {
+    position: relative;
+    width: 100%;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    background-color: var(--slide-bg, var(--color-bg-primary));
+    color: var(--slide-text, var(--color-text));
+    overflow: hidden;
+  }
+  .hero-slide--active {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Slide Background Image & Overlay */
+  .hero-slide-bg-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+  }
+  .hero-slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .hero-container {
+    position: relative;
+    z-index: 3;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 3.5rem;
+    min-height: calc(85vh - 5rem);
+  }
+
+  /* Visual Column */
+  .hero-visual-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-visual-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .hero-artisan-illustration {
+    width: 100%;
+    max-width: 480px;
+    transition: transform 0.4s ease;
+  }
+  .hero-artisan-illustration:hover {
+    transform: scale(1.02);
+  }
+  .hero-vector-art {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 15px 35px rgba(12, 74, 52, 0.12));
+  }
+  .hero-custom-img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-card, 20px);
+    box-shadow: 0 20px 40px rgba(12, 74, 52, 0.12);
+  }
+
+  /* Content Column */
+  .hero-content-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 540px;
+  }
+  .hero-eyebrow {
+    margin-bottom: 0.8rem;
+  }
+  .hero-eyebrow-badge {
+    display: inline-block;
+    padding: 0.25rem 0.8rem;
+    border-radius: 9999px;
+    background-color: rgba(12, 74, 52, 0.08);
+    color: var(--slide-heading, var(--color-headings));
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .hero-heading {
+    font-size: clamp(2.4rem, 4.2vw + 0.5rem, 4.2rem);
+    font-weight: 800;
+    color: var(--slide-heading, #0C4A34);
+    line-height: 1.1;
+    margin-bottom: 0.9rem;
+    letter-spacing: -0.02em;
+  }
+  .hero-subheading {
+    font-size: clamp(1.2rem, 1.8vw + 0.3rem, 1.6rem);
+    font-weight: 500;
+    color: var(--slide-heading, #0C4A34);
+    line-height: 1.35;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+  }
+  .hero-description {
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: var(--slide-text, #1B3B2B);
+    margin-bottom: 2rem;
+    max-width: 460px;
+  }
+  .hero-description p {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Form & Button Actions */
+  .hero-form-wrapper {
+    width: 100%;
+    max-width: 440px;
+  }
+  .hero-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .hero-input {
+    background-color: #FFFFFF;
+    border: 1.5px solid rgba(12, 74, 52, 0.12);
+    box-shadow: 0 4px 10px rgba(12, 74, 52, 0.04);
+    padding: 0.95rem 1.5rem;
+    font-size: 1rem;
+  }
+  .hero-input:focus {
+    border-color: var(--color-primary, #0C4A34);
+    box-shadow: 0 0 0 3px rgba(0, 191, 165, 0.25);
+  }
+  .hero-submit-btn {
+    width: auto;
+    align-self: flex-start;
+    padding: 0.85rem 2.8rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    background-color: var(--slide-btn-bg, #00BFA5);
+    color: var(--slide-btn-text, #0C3827);
+  }
+  .hero-cta-action {
+    margin-top: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .hero-price-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem 1.2rem;
+    background-color: rgba(12, 74, 52, 0.08);
+    border: 1px solid rgba(12, 74, 52, 0.15);
+    border-radius: var(--radius-btn, 50px);
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--slide-heading, var(--color-headings));
+  }
+
+  /* Social Dock */
+  .hero-social-dock {
+    margin-top: 2rem;
+  }
+
+  /* Navigation Arrows */
+  .hero-carousel-nav {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    pointer-events: none;
+    z-index: 10;
+    transform: translateY(-50%);
+  }
+  .hero-nav-arrow {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.85);
+    color: var(--color-primary, #0C4A34);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(12, 74, 52, 0.15);
+    transition: all 0.25s ease;
+    border: 1px solid rgba(12, 74, 52, 0.1);
+  }
+  .hero-nav-arrow:hover {
+    background-color: var(--color-btn-bg, #00BFA5);
+    color: #0C3827;
+    transform: scale(1.08);
+  }
+  .hero-nav-arrow--next {
+    transform: rotate(180deg);
+  }
+  .hero-nav-arrow--next:hover {
+    transform: rotate(180deg) scale(1.08);
+  }
+
+  /* Pagination Dots */
+  .hero-pagination {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    z-index: 10;
+  }
+  .hero-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background-color: rgba(12, 74, 52, 0.25);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+  }
+  .hero-dot:hover {
+    background-color: rgba(12, 74, 52, 0.6);
+  }
+  .hero-dot--active {
+    width: 2.2rem;
+    border-radius: 9999px;
+    background-color: var(--color-btn-bg, #00BFA5);
+    box-shadow: 0 2px 8px rgba(0, 191, 165, 0.4);
+  }
+
+  /* Responsive Rules */
+  @media screen and (max-width: 1023px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      min-height: auto;
+      text-align: center;
+    }
+    .hero-content-col {
+      align-items: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-description {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-submit-btn {
+      align-self: center;
+      width: 100%;
+    }
+    .hero-cta-action {
+      justify-content: center;
+      width: 100%;
+    }
+    .hero-social-dock {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .hero-visual-wrapper {
+      order: -1;
+      max-width: 360px;
+    }
+    .hero-carousel-nav {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .hero-visual-wrapper {
+      max-width: 290px;
+    }
+    .hero-alpina {
+      padding-top: 20px;
+      padding-bottom: 50px;
+    }
+    .hero-form-wrapper {
+      max-width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.querySelector('.hero-alpina');
+    if (!carousel) return;
+
+    const slides = carousel.querySelectorAll('.hero-slide');
+    const dots = carousel.querySelectorAll('.hero-dot');
+    const prevBtn = carousel.querySelector('[data-hero-prev]');
+    const nextBtn = carousel.querySelector('[data-hero-next]');
+
+    if (slides.length <= 1) return;
+
+    let currentIndex = 0;
+    let autoplayTimer = null;
+    const isAutoplay = carousel.getAttribute('data-autoplay') === 'true';
+    const autoplaySpeed = parseInt(carousel.getAttribute('data-autoplay-speed'), 10) || 6000;
+
+    function goToSlide(index) {
+      if (index < 0) {
+        currentIndex = slides.length - 1;
+      } else if (index >= slides.length) {
+        currentIndex = 0;
+      } else {
+        currentIndex = index;
+      }
+
+      slides.forEach((slide, idx) => {
+        const isActive = idx === currentIndex;
+        slide.classList.toggle('hero-slide--active', isActive);
+        slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+      });
+
+      dots.forEach((dot, idx) => {
+        const isActive = idx === currentIndex;
+        dot.classList.toggle('hero-dot--active', isActive);
+        dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+    }
+
+    function nextSlide() {
+      goToSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      goToSlide(currentIndex - 1);
+    }
+
+    function startAutoplay() {
+      if (isAutoplay && !autoplayTimer) {
+        autoplayTimer = setInterval(nextSlide, autoplaySpeed);
+      }
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        prevSlide();
+        stopAutoplay();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        nextSlide();
+        stopAutoplay();
+      });
+    }
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        const targetIndex = parseInt(dot.getAttribute('data-slide-target'), 10);
+        goToSlide(targetIndex);
+        stopAutoplay();
+      });
+    });
+
+    // Touch / Swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    carousel.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      stopAutoplay();
+    }, { passive: true });
+
+    carousel.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+      if (Math.abs(swipeDistance) > 40) {
+        if (swipeDistance < 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    }
+
+    // Keyboard support
+    carousel.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        prevSlide();
+        stopAutoplay();
+      } else if (e.key === 'ArrowRight') {
+        nextSlide();
+        stopAutoplay();
+      }
+    });
+
+    // Pause on hover
+    carousel.addEventListener('mouseenter', stopAutoplay);
+    carousel.addEventListener('mouseleave', startAutoplay);
+
+    startAutoplay();
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Hero Alpina Carousel",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Carousel Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable automatic slide rotation",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "label": "Rotation interval (seconds)",
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation_arrows",
+      "label": "Show previous/next arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination_dots",
+      "label": "Show pagination dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wavy_lines",
+      "label": "Show organic wavy background lines",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 10,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 10,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Tea Product Slide",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Slide Background"
+        },
+        {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Slide background image",
+          "info": "Upload an estate landscape or tea garden photo. Leave blank to use background color."
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "min": 0,
+          "max": 80,
+          "step": 5,
+          "unit": "%",
+          "label": "Background image dark overlay",
+          "default": 10
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Slide background color",
+          "default": "#D4F1E0"
+        },
+        {
+          "type": "header",
+          "content": "Product Visual"
+        },
+        {
+          "type": "image_picker",
+          "id": "product_image",
+          "label": "Product image (optional)",
+          "info": "Upload your tea tin, packaging, or teaware photo. Leave blank to display signature artisan teapot illustration."
+        },
+        {
+          "type": "header",
+          "content": "Slide Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow tag",
+          "default": "ALPINA BREW RESERVE"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Matcha Tea"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "default": "Subscribe and taste the new flavor first!"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Discover our single-origin, hand-harvested ceremonial matcha and high-altitude Himalayan loose-leaf teas. Crafted with ancestral care for an exceptionally smooth, revitalizing brew.</p>"
+        },
+        {
+          "type": "header",
+          "content": "Action Type"
+        },
+        {
+          "type": "select",
+          "id": "content_type",
+          "label": "Slide action",
+          "options": [
+            { "value": "form", "label": "Newsletter / Tasting Sample Form" },
+            { "value": "button", "label": "Call-to-Action Button" }
+          ],
+          "default": "form"
+        },
+        {
+          "type": "text",
+          "id": "price_tag",
+          "label": "Price or highlight tag (optional)",
+          "default": "From ₹1,250"
+        },
+        {
+          "type": "text",
+          "id": "form_button_label",
+          "label": "Form submit button label",
+          "default": "CONFIRM"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "CTA button label",
+          "default": "EXPLORE THIS HARVEST"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "CTA button link"
+        },
+        {
+          "type": "header",
+          "content": "Slide Colors"
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading color",
+          "default": "#0C4A34"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#1B3B2B"
+        },
+        {
+          "type": "color",
+          "id": "btn_bg",
+          "label": "Button background color",
+          "default": "#00BFA5"
+        },
+        {
+          "type": "color",
+          "id": "btn_text",
+          "label": "Button text color",
+          "default": "#0C3827"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Alpina Carousel",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "DARJEELING SINGLE ESTATE 6,200FT",
+            "heading": "Himalayan First Flush",
+            "subheading": "The Champagne of Mountain Teas • Spring 2026",
+            "description": "<p>Hand-plucked at first morning dew in misty alpine cloud forests. Vibrant floral muscatel notes, subtle white peach undertones, and a lingering honeyed finish.</p>",
+            "content_type": "button",
+            "price_tag": "From ₹1,250 • 100g",
+            "button_label": "EXPLORE FIRST FLUSH",
+            "background_color": "#EBF7EE"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "ALPINA BREW CEREMONIAL GRADE",
+            "heading": "Ceremonial Matcha Tea",
+            "subheading": "Stone-Ground First Harvest • Uji & Himalayan Terroir",
+            "description": "<p>Crafted exclusively from shade-grown tender spring tencha leaves. Whisk into an intensely silky, vibrant emerald froth brimming with clean natural L-theanine energy and rich umami sweetness.</p>",
+            "content_type": "button",
+            "price_tag": "From ₹1,450 • 50g Tin",
+            "button_label": "SHOP CEREMONIAL MATCHA",
+            "background_color": "#D4F1E0"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
