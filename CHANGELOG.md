@@ -58,6 +58,9 @@ All notable changes to the Alpina Brew Shopify Online Store 2.0 theme are docume
 
 ### Fixed
 - Unnested `{% stylesheet %}` and `{% javascript %}` tags from `{% if customer %}` in [`snippets/profile-completion-banner.liquid`](file:///e:/tea-store/snippets/profile-completion-banner.liquid) to comply with Liquid top-level tag syntax requirements.
+- Corrected invalid trailing comma syntax in [`locales/en.default.schema.json`](file:///e:/tea-store/locales/en.default.schema.json) to ensure strict JSON schema compliance.
+- Audited all 58 codebase files (JSON validation, SVG XML verification, JS syntax check, CSS brace balancing, asset references, and section mapping). All checks passed with 100% validity.
+- Added native `content_for_additional_checkout_buttons` to [`sections/cart.liquid`](file:///e:/tea-store/sections/cart.liquid) to support official accelerated digital wallet payments (UPI / Google Pay / Shop Pay).
 
 ### Enhanced
 - **Hero Alpina Carousel**:

@@ -158,6 +158,12 @@
               PROCEED TO SECURE CHECKOUT
             </button>
 
+            {%- if content_for_additional_checkout_buttons -%}
+              <div class="additional-checkout-buttons">
+                {{ content_for_additional_checkout_buttons }}
+              </div>
+            {%- endif -%}
+
             <div class="cart-continue-link">
               <a href="{{ routes.all_products_collection_url }}">
                 &larr; Continue Exploring Teas
@@ -380,6 +386,9 @@
   .cart-checkout-btn {
     padding: 1rem 1.5rem;
     margin-top: 0.5rem;
+  }
+  .additional-checkout-buttons {
+    margin-top: 0.8rem;
   }
   .cart-continue-link {
     text-align: center;
